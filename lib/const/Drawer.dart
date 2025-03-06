@@ -1,3 +1,4 @@
+import 'package:abo_najib_2/view/ReminderPage.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,55 +69,34 @@ class DrawerClass extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                // buildListItem(
-                //   icon: Icons.person,
-                //   title: 'My Profile',
-                //   onTap: () {
-                //     Get.to(EditProfile());
-                //   },
-                // ),
-                // buildListItem(
-                //   icon: Icons.golf_course_sharp,
-                //   title: 'Goals',
-                //   onTap: () {
-                //     Get.to(Goals());
-                //   },
-                // ),
                 buildListItem(
                   icon: Icons.punch_clock_sharp,
                   title: 'Reminders',
                   onTap: () {
-                    Get.toNamed("/ReminderPage");
+                    Get.to(Reminders());
                   },
                 ),
                 buildListItem(
                   icon: Icons.punch_clock_sharp,
-                  title: 'UploadDataPage',
+                  title: 'Goals',
                   onTap: () {
-                    Get.toNamed("/UploadDataPage");
+                    Get.toNamed("/Goals");
                   },
                 ),
-                // buildListItem(
-                //   icon: Icons.person,
-                //   title: 'Incomes',
-                //   onTap: () {
-                //     Get.to(IncomesScreens());
-                //   },
-                // ),
-                // buildListItem(
-                //   icon: Icons.person,
-                //   title: 'Expences',
-                //   onTap: () {
-                //     Get.to(ExpencesScreens());
-                //   },
-                // ),
-                // buildListItem(
-                //   icon: Icons.person,
-                //   title: 'Download',
-                //   onTap: () {
-                //     Get.to(UploadDataPage());
-                //   },
-                // ),
+                buildListItem(
+                  icon: Icons.punch_clock_sharp,
+                  title: 'IncomesScreens',
+                  onTap: () {
+                    Get.toNamed("/IncomesScreens");
+                  },
+                ),
+                buildListItem(
+                  icon: Icons.punch_clock_sharp,
+                  title: 'Expences',
+                  onTap: () {
+                    Get.toNamed("/ExpencesScreens");
+                  },
+                ),
                 const Divider(),
                 buildListItem(
                   icon: Icons.logout,
@@ -132,12 +112,11 @@ class DrawerClass extends StatelessWidget {
                       btnCancelOnPress: () {
                         // لا، لا تسجل الخروج
                       },
-                      // btnOkOnPress: () async {
-                      //   // نعم، سجل الخروج
-                      //   await logoutUser();
-                      //   Get.toNamed(loginpage
-                      //       .id); // العودة لصفحة تسجيل الدخول بعد الخروج
-                      // },
+                      btnOkOnPress: () async {
+                        // نعم، سجل الخروج
+                        await logoutUser();
+
+                      },
                       btnCancelText: 'No',
                       btnOkText: 'Yes',
                     ).show();

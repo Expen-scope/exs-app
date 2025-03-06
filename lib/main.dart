@@ -1,11 +1,17 @@
 import 'package:abo_najib_2/controller/ExpensesController.dart';
+import 'package:abo_najib_2/controller/GoalController.dart';
+import 'package:abo_najib_2/controller/ReminderController.dart';
 import 'package:abo_najib_2/view/AddExpense.dart';
+import 'package:abo_najib_2/view/AddGoalScreen.dart';
 import 'package:abo_najib_2/view/AddIncomes.dart';
+import 'package:abo_najib_2/view/EditGoalScreen.dart';
 import 'package:abo_najib_2/view/ExpencesScreens.dart';
+import 'package:abo_najib_2/view/GoalScreen.dart';
 import 'package:abo_najib_2/view/HomePage.dart';
 import 'package:abo_najib_2/view/IncomesPage.dart';
 import 'package:abo_najib_2/view/LoginPage.dart';
 import 'package:abo_najib_2/view/RegisterPage.dart';
+import 'package:abo_najib_2/view/ReminderPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'controller/IcomesContorller.dart';
@@ -15,6 +21,8 @@ import 'controller/RegisterController.dart';
 void main() async {
   Get.put(ExpencesController());
   Get.put(IncomesController());
+  Get.put(GoalController());
+  Get.put(ReminderController());
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => RegisterController());
   runApp(MyApp());
@@ -61,8 +69,17 @@ class MyApp extends StatelessWidget {
           name: ("/AddExpences"),
           page: () => AddExpences(),
         ),
+        GetPage(
+          name: ("/Goals"),
+          page: () => GoalsScreen(),
+        ),
+        GetPage(
+          name: ("/AddGoal"),
+          page: () => AddGoalScreen(),
+        ),
+
       ],
-      initialRoute: "/IncomesScreens",
+      initialRoute: "/HomePage",
     );
   }
 }
