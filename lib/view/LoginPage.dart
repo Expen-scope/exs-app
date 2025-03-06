@@ -41,12 +41,15 @@ class LoginPage extends StatelessWidget {
         Column(
           children: [
             Text("أبو نجيب",
-                style: TextStyle(fontSize: 24, color: Colors.white)),
+                style: TextStyle(fontSize: 26, color: Colors.white)),
             Text("ABO NAJIB",
-                style: TextStyle(fontSize: 18, color: Colors.white)),
+                style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
+                    fontFamily: "Tajawal-Bold.ttf")),
           ],
         ),
-        Image.asset('assets/photo/khader (1).png', height: 160),
+        Image.asset('assets/Photo/khader (1).png', height: 160),
       ],
     );
   }
@@ -84,7 +87,7 @@ class LoginPage extends StatelessWidget {
         SizedBox(height: 5),
         Obx(() => TextFormField(
               decoration: InputDecoration(
-                hintText: '',
+                hintText: 'Gmail',
                 errorText: errorText.value,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -107,7 +110,7 @@ class LoginPage extends StatelessWidget {
         Obx(() => TextFormField(
               obscureText: !controller.isPasswordVisible.value,
               decoration: InputDecoration(
-                hintText: '',
+                hintText: 'Password',
                 errorText: controller.passwordError.value,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -136,7 +139,7 @@ class LoginPage extends StatelessWidget {
     return Obx(() => ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
-            backgroundColor: Colors.orange,
+            backgroundColor: Color(0xFF2e495e),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -155,8 +158,8 @@ class LoginPage extends StatelessWidget {
       children: [
         Text("Don't have an account?", style: TextStyle(color: Colors.white)),
         TextButton(
-          onPressed: () => Get.toNamed("/register"),
-          child: Text("Register", style: TextStyle(color: Colors.white)),
+          onPressed: () => Get.toNamed("/Register"),
+          child: Text("Register", style: TextStyle(color: Color(0xFF2e495e))),
         ),
       ],
     );

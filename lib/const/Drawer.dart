@@ -115,7 +115,6 @@ class DrawerClass extends StatelessWidget {
                       btnOkOnPress: () async {
                         // نعم، سجل الخروج
                         await logoutUser();
-
                       },
                       btnCancelText: 'No',
                       btnOkText: 'Yes',
