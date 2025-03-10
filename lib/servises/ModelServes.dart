@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import '../model/Goal.dart';
 
 class GoalService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: "http://your-laravel-api.com/api"));
+  final Dio _dio = Dio(BaseOptions(baseUrl: "https://abo-najib.test/"));
 
   Future<List<GoalModel>> fetchGoals() async {
     final response = await _dio.get("/goals");

@@ -20,6 +20,7 @@ class LoginPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
           child: Form(
+            key: controller.formKey, // استخدام formKey
             child: ListView(
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.12),
@@ -64,10 +65,8 @@ class LoginPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildTextField("Gmail", (val) {
-            controller.email.value = val;
-            controller.emailError.value = null;
-          }, controller.emailError),
+          _buildTextField(
+              "Gmail", controller.emailController, "أدخل بريدًا صحيحًا"),
           SizedBox(height: 10),
           _buildPasswordField(),
           SizedBox(height: 20),
@@ -78,25 +77,29 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(
-      String label, Function(String) onChanged, RxnString errorText) {
+  Widget _buildTextField(String label, TextEditingController textController,
+      String validationMsg) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
-        Obx(() => TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Gmail',
-                errorText: errorText.value,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.8),
-              ),
-              onChanged: onChanged,
-            )),
+        TextFormField(
+          controller: textController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            hintText: label,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.8),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) return validationMsg;
+            return null;
+          },
+        ),
       ],
     );
   }
@@ -108,10 +111,10 @@ class LoginPage extends StatelessWidget {
         Text("Password", style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
         Obx(() => TextFormField(
+              controller: controller.passwordController,
               obscureText: !controller.isPasswordVisible.value,
               decoration: InputDecoration(
                 hintText: 'Password',
-                errorText: controller.passwordError.value,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -121,14 +124,12 @@ class LoginPage extends StatelessWidget {
                   icon: Icon(controller.isPasswordVisible.value
                       ? Icons.visibility
                       : Icons.visibility_off),
-                  onPressed: () {
-                    controller.togglePasswordVisibility();
-                  },
+                  onPressed: controller.togglePasswordVisibility,
                 ),
               ),
-              onChanged: (val) {
-                controller.password.value = val;
-                controller.passwordError.value = null;
+              validator: (value) {
+                if (value == null || value.isEmpty) return "أدخل كلمة المرور";
+                return null;
               },
             )),
       ],
@@ -144,7 +145,7 @@ class LoginPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          onPressed: controller.validateInputs, // تم استدعاء validateInputs هنا
+          onPressed: controller.validateInputs,
           child: controller.isLoading.value
               ? CircularProgressIndicator(color: Colors.white)
               : Text("Login",

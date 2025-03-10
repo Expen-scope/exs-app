@@ -7,16 +7,18 @@ class RegisterController extends GetxController {
   var email = ''.obs;
   var password = ''.obs;
   var confirmPassword = ''.obs;
+  // var salary = ''.obs;
 
   var nameError = RxnString();
   var emailError = RxnString();
   var passwordError = RxnString();
   var confirmPasswordError = RxnString();
+  var salaryError = RxnString();
 
   var isLoading = false.obs;
 
   Dio.Dio dio =
-      Dio.Dio(Dio.BaseOptions(baseUrl: 'https://your-api-url.com/api'));
+      Dio.Dio(Dio.BaseOptions(baseUrl: 'http://abo-najib.test/api/auth'));
 
   void validateInputs() {
     nameError.value = name.value.isEmpty ? "يجب إدخال الاسم" : null;
@@ -26,6 +28,7 @@ class RegisterController extends GetxController {
         password.value.isEmpty ? "يجب إدخال كلمة المرور" : null;
     confirmPasswordError.value =
         confirmPassword.value.isEmpty ? "يجب إدخال تأكيد كلمة المرور" : null;
+    // salaryError.value = salary.value.isEmpty ? "يجب إدخال الراتب" : null;
 
     if (password.value != confirmPassword.value) {
       confirmPasswordError.value = "كلمات المرور غير متطابقة";
@@ -38,7 +41,8 @@ class RegisterController extends GetxController {
     if (nameError.value == null &&
         emailError.value == null &&
         passwordError.value == null &&
-        confirmPasswordError.value == null) {
+        confirmPasswordError.value == null &&
+        salaryError.value == null) {
       isLoading.value = true;
       try {
         Dio.Response response = await dio.post(
@@ -48,6 +52,7 @@ class RegisterController extends GetxController {
             'email': email.value,
             'password': password.value,
             'password_confirmation': confirmPassword.value,
+            // 'salary': salary.value,
           },
         );
 
@@ -59,10 +64,20 @@ class RegisterController extends GetxController {
           Get.snackbar(
               "خطأ", response.data['message'] ?? "حدث خطأ أثناء التسجيل");
         }
+
       } on Dio.DioException catch (e) {
-        Get.snackbar("خطأ",
-            e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
-      } finally {
+    print("❌ Dio Error: ${e.message}");
+    print("🔍 Response Data: ${e.response?.data}");
+    print("📡 Status Code: ${e.response?.statusCode}");
+    Get.snackbar("خطأ", e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
+    }
+
+
+    // on Dio.DioException catch (e) {
+      //   Get.snackbar("خطأ",
+      //       e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
+      // }
+      finally {
         isLoading.value = false;
       }
     }

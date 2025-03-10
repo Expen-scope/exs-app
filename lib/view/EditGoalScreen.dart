@@ -26,11 +26,12 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
   }
 
   void updateGoal() {
-    double savedAmount =
-        double.tryParse(savedAmountController.text) ?? widget.goal.savedAmount;
-    goalController.updateGoal(widget.goalIndex, savedAmount);
+    double savedAmount = double.tryParse(savedAmountController.text) ?? widget.goal.savedAmount;
+    GoalModel updatedGoal = widget.goal.copyWith(savedAmount: savedAmount);
+    goalController.updateGoal(widget.goal.id, updatedGoal);
     Get.back(); // الرجوع للشاشة السابقة
   }
+
 
   @override
   Widget build(BuildContext context) {

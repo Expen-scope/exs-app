@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: "/MyCustomSplashScreen", page: () => MyCustomSplashScreen())
       ],
-      initialRoute: "/MyCustomSplashScreen",
+      initialRoute: "/HomePage",
     );
   }
 }

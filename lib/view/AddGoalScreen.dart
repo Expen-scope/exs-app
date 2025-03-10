@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../const/AppBarC.dart';
+import '../const/Constants.dart';
 import '../controller/GoalController.dart';
 import '../model/Goal.dart';
 
-class AddGoalScreen extends StatelessWidget {
+class AddGoalScreen extends StatefulWidget {
+  @override
+  _AddGoalScreenState createState() => _AddGoalScreenState();
+}
+
+class _AddGoalScreenState extends State<AddGoalScreen> {
   final GoalController goalController = Get.find();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController totalAmountController = TextEditingController();
   final TextEditingController savedAmountController = TextEditingController();
+
   String selectedType = "Default Type";
   DateTime? selectedDate;
 
@@ -20,14 +27,16 @@ class AddGoalScreen extends StatelessWidget {
     "Others"
   ];
 
-  void saveGoal(BuildContext context) {
+  void saveGoal() {
     if (nameController.text.isEmpty || totalAmountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please fill all required fields")));
+        const SnackBar(content: Text("Please fill all required fields")),
+      );
       return;
     }
 
     GoalModel newGoal = GoalModel(
+      id: DateTime.now().millisecondsSinceEpoch, // توليد ID فريد
       name: nameController.text,
       totalAmount: double.tryParse(totalAmountController.text) ?? 0.0,
       savedAmount: double.tryParse(savedAmountController.text) ?? 0.0,
@@ -37,7 +46,7 @@ class AddGoalScreen extends StatelessWidget {
     );
 
     goalController.addGoal(newGoal);
-    Get.back(); // إغلاق الشاشة
+    Get.back();
   }
 
   Future<void> pickDateTime(BuildContext context) async {
@@ -49,11 +58,21 @@ class AddGoalScreen extends StatelessWidget {
     );
 
     if (pickedDate != null) {
-      final TimeOfDay? pickedTime =
-          await showTimePicker(context: context, initialTime: TimeOfDay.now());
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
       if (pickedTime != null) {
-        selectedDate = DateTime(pickedDate.year, pickedDate.month,
-            pickedDate.day, pickedTime.hour, pickedTime.minute);
+        setState(() {
+          selectedDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
       }
     }
   }
@@ -66,34 +85,98 @@ class AddGoalScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: "Goal Name")),
-            TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Goal Name",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            SizedBox(height: hight(context) * .02),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
                 controller: totalAmountController,
-                decoration: const InputDecoration(labelText: "Total Amount"),
-                keyboardType: TextInputType.number),
-            TextField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Total Amount",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            SizedBox(height: hight(context) * .02),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
                 controller: savedAmountController,
-                decoration: const InputDecoration(labelText: "Saved Amount"),
-                keyboardType: TextInputType.number),
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Saved Amount",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            SizedBox(height: hight(context) * .02),
             DropdownButtonFormField<String>(
               value: selectedType,
-              items: goalTypes
-                  .map((type) =>
-                      DropdownMenuItem(value: type, child: Text(type)))
-                  .toList(),
-              onChanged: (value) => selectedType = value!,
-              decoration: const InputDecoration(labelText: "Goal Type"),
+              items: goalTypes.map((type) {
+                return DropdownMenuItem(
+                  value: type,
+                  child: Text(type),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedType = value!;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: "Goal Type",
+                border: OutlineInputBorder(),
+              ),
             ),
             TextButton(
-                onPressed: () => pickDateTime(context),
-                child: Text(selectedDate == null
+              onPressed: () => pickDateTime(context),
+              child: Text(
+                selectedDate == null
                     ? "Choose Date & Time"
-                    : selectedDate!.toLocal().toString())),
-            ElevatedButton(
-                onPressed: () => saveGoal(context),
-                child: const Text("Save Goal")),
+                    : "${selectedDate!.toLocal()}".split('.')[0],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF507da0), Color(0xFF507da0)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8), // تعديل شكل الزر
+                ),
+                child: ElevatedButton(
+                    onPressed: saveGoal,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Color(
+                          0xFF507da0), // اجعل الخلفية شفافة لتظهر التدرجات
+                      // اجعل الخلفية شفافة لتظهر التدرجات
+                      shadowColor: Colors.transparent, // إزالة الظل الافتراضي
+                    ),
+                    child: const Text(
+                      "Save Goal",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors
+                            .white, // اجعل النص أبيض ليظهر بوضوح على التدرج
+                      ),
+                    )),
+              ),
+            ),
           ],
         ),
       ),
