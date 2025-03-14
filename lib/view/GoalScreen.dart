@@ -29,8 +29,10 @@ class GoalsScreen extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.all(10),
               child: ListTile(
-                title: Text(goal.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Saved: ${goal.savedAmount} / ${goal.totalAmount}"),
+                title: Text(goal.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle:
+                    Text("Saved: ${goal.savedAmount} / ${goal.totalAmount}"),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
@@ -44,10 +46,10 @@ class GoalsScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => AddGoalScreen()); // الانتقال إلى AddGoalScreen
+          Get.to(() => AddGoalScreen());
         },
-        child: const Icon(Icons.add),
-        tooltip: "Add Goal", // تلميح يظهر عند مرور الماوس أو اللمس
+        backgroundColor: const Color(0xFF507da0),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

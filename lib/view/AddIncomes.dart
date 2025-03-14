@@ -28,6 +28,20 @@ class AddIncomes extends StatelessWidget {
                 controller: valueController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
+                  labelText: "Name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: hight(context) * .03),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
+                controller: valueController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
                   labelText: "Enter Income Value",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

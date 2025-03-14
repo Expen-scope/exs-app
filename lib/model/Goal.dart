@@ -25,7 +25,8 @@ class GoalModel {
       savedAmount: (json['savedAmount'] as num).toDouble(),
       type: json['type'],
       startDate: DateTime.parse(json['startDate']),
-      deadline: json['deadline'] != null ? DateTime.parse(json['deadline']) : null,
+      deadline:
+          json['deadline'] != null ? DateTime.parse(json['deadline']) : null,
     );
   }
 

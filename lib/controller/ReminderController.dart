@@ -10,6 +10,23 @@ class ReminderController extends GetxController {
   @override
   void onInit() {
     fetchReminders();
+    reminders.addAll([
+      ReminderModel(
+          id: 1,
+          name: "فاتورة الكهرباء",
+          amount: 100,
+          reminderDate: DateTime.now().add(const Duration(days: 5))),
+      ReminderModel(
+          id: 2,
+          name: "اشتراك الجيم",
+          amount: 50,
+          reminderDate: DateTime.now().add(const Duration(days: 10))),
+      ReminderModel(
+          id: 3,
+          name: "تجديد النت",
+          amount: 75,
+          reminderDate: DateTime.now().add(const Duration(days: 2))),
+    ]);
     super.onInit();
   }
 

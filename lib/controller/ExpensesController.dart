@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,12 +25,47 @@ class ExpencesController extends GetxController {
         color: Colors.grey, icon: Icon(Icons.category, color: Colors.grey)),
   };
 
+  void _addFakeExpenses() {
+    listExpenses.value = [
+      Expense(type: "Food & Drinks", value: 50.0, date: ''),
+      Expense(type: "Shopping", value: 120.0, date: ''),
+      Expense(type: "Housing", value: 300.0, date: ''),
+      Expense(type: "Transportation", value: 45.0, date: ''),
+      Expense(type: "Vehicle", value: 70.0, date: ''),
+      Expense(type: "Others", value: 20.0, date: ''),
+    ];
+  }
+
   // جلب المصروفات من API لارافيل
   Future<void> fetchExpenses() async {
+    // try {
+    //   final response = await http
+    //       .get(Uri.parse('https://your-laravel-api.com/api/expenses'));
+    //
+    //   if (response.statusCode == 200) {
+    //     var data = json.decode(response.body);
+    //     listExpenses.value = List<Expense>.from(
+    //         data.map((expense) => Expense.fromJson(expense)));
+    //   } else {
+    //     Get.snackbar('Error', 'Failed to load expenses');
+    //   }
+    // } catch (e) {
+    //   Get.snackbar('Error', 'Failed to load expenses');
+    // }
+    if (kDebugMode) {
+      // في وضع التطوير، أضف بيانات وهمية فقط
+      listExpenses.value = [
+        Expense(type: "Food & Drinks", value: 50.0, date: ''),
+        Expense(type: "Shopping", value: 120.0, date: ''),
+        Expense(type: "Housing", value: 300.0, date: ''),
+      ];
+      return;
+    }
+
+    // جلب البيانات من API في الوضع العادي
     try {
       final response = await http
           .get(Uri.parse('https://your-laravel-api.com/api/expenses'));
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         listExpenses.value = List<Expense>.from(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../const/AppBarC.dart';
+import '../const/Constants.dart';
 import '../controller/ReminderController.dart';
 import '../model/Reminder.dart';
 
@@ -70,26 +71,44 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbarofpage(TextPage: "إضافة تذكير جديد"),
+      appBar: Appbarofpage(TextPage: "Reminder"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "اسم التذكير"),
+            SizedBox(height: hight(context) * .02),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: "Reminder Name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "المبلغ"),
+            SizedBox(height: hight(context) * .03),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Amount",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: hight(context) * .03),
             Row(
               children: [
                 Text(
-                    "التاريخ: ${selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : 'لم يتم التحديد'}"),
+                    "the date: ${selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : ''}"),
                 IconButton(
                   icon: const Icon(Icons.calendar_today),
                   onPressed: pickDate,
@@ -99,7 +118,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             Row(
               children: [
                 Text(
-                    "الوقت: ${selectedTime != null ? selectedTime!.format(context) : 'لم يتم التحديد'}"),
+                    "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}"),
                 IconButton(
                   icon: const Icon(Icons.access_time),
                   onPressed: pickTime,
@@ -108,9 +127,30 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             ),
             const SizedBox(height: 30),
             Center(
-              child: ElevatedButton(
-                onPressed: saveReminder,
-                child: const Text("حفظ التذكير"),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF507da0), Color(0xFF507da0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Color(0xFF507da0),
+                      shadowColor: Colors.transparent,
+                    ),
+                    onPressed: saveReminder,
+                    child: Text(
+                      "Add",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

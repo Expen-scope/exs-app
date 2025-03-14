@@ -46,7 +46,8 @@ class LoginController extends GetxController {
         Get.snackbar("نجاح", "تم تسجيل الدخول بنجاح");
         Get.offAllNamed('/home');
       } else {
-        var errorMessage = jsonDecode(response.body)['message'] ?? "فشل تسجيل الدخول";
+        var errorMessage =
+            jsonDecode(response.body)['message'] ?? "فشل تسجيل الدخول";
         Get.snackbar("خطأ", errorMessage);
       }
     } catch (e) {

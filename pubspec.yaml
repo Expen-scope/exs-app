@@ -38,7 +38,7 @@ dependencies:
   firebase_auth: ^5.4.0
   shared_preferences: ^2.2.2
   syncfusion_flutter_charts: ^28.1.38
-  fl_chart: ^0.70.1
+  fl_chart: ^0.70.2
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
   intl: ^0.20.1

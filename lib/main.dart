@@ -12,6 +12,7 @@ import 'package:abo_najib_2/view/IncomesPage.dart';
 import 'package:abo_najib_2/view/LoginPage.dart';
 import 'package:abo_najib_2/view/RegisterPage.dart';
 import 'package:abo_najib_2/view/ReminderPage.dart';
+import 'package:abo_najib_2/view/Setting.dart';
 import 'package:abo_najib_2/view/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -79,7 +80,13 @@ class MyApp extends StatelessWidget {
           page: () => AddGoalScreen(),
         ),
         GetPage(
-            name: "/MyCustomSplashScreen", page: () => MyCustomSplashScreen())
+          name: "/MyCustomSplashScreen",
+          page: () => MyCustomSplashScreen(),
+        ),
+        GetPage(
+          name: "/Setting",
+          page: () => Setting(),
+        ),
       ],
       initialRoute: "/HomePage",
     );

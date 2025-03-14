@@ -85,7 +85,7 @@ class DrawerClass extends StatelessWidget {
                 ),
                 buildListItem(
                   icon: Icons.punch_clock_sharp,
-                  title: 'IncomesScreens',
+                  title: 'Incomes',
                   onTap: () {
                     Get.toNamed("/IncomesScreens");
                   },
@@ -95,6 +95,13 @@ class DrawerClass extends StatelessWidget {
                   title: 'Expences',
                   onTap: () {
                     Get.toNamed("/ExpencesScreens");
+                  },
+                ),
+                buildListItem(
+                  icon: Icons.punch_clock_sharp,
+                  title: 'Setting',
+                  onTap: () {
+                    Get.toNamed("/Setting");
                   },
                 ),
                 const Divider(),

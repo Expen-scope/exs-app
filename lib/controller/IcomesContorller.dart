@@ -11,7 +11,17 @@ class IncomesController extends GetxController {
   var isLoading = false.obs;
   var selectedType = "Salaries and Wages".obs;
   final Dio.Dio dio = Dio.Dio();
-  final String apiUrl = 'https://your-laravel-api.com/api/incomes';
+  final String apiUrl = 'https://abo-najib.test/api/addIncome/';
+
+  void addFakeData() {
+    incomes.addAll([
+      Income(value: 1500, type: "Salary"),
+      Income(value: 500, type: "Freelance"),
+      Income(value: 300, type: "Investment"),
+      Income(value: 700, type: "Business"),
+      Income(value: 100, type: "Others"),
+    ]);
+  }
 
   final Map<String, IncomeInfo> incomeListDATA = {
     "Salary":
@@ -29,6 +39,7 @@ class IncomesController extends GetxController {
   void onInit() {
     fetchIncomes();
     super.onInit();
+    addFakeData();
   }
 
   Future<void> fetchIncomes() async {

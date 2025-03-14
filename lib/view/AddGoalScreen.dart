@@ -36,7 +36,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     }
 
     GoalModel newGoal = GoalModel(
-      id: DateTime.now().millisecondsSinceEpoch, // توليد ID فريد
+      id: DateTime.now().millisecondsSinceEpoch,
       name: nameController.text,
       totalAmount: double.tryParse(totalAmountController.text) ?? 0.0,
       savedAmount: double.tryParse(savedAmountController.text) ?? 0.0,
@@ -82,9 +82,10 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Scaffold(
       appBar: Appbarofpage(TextPage: "Goal Add"),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: hight(context) * .028),
         child: Column(
           children: [
+            SizedBox(height: hight(context) * .02),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
@@ -142,6 +143,9 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             TextButton(
               onPressed: () => pickDateTime(context),
               child: Text(
+                style: TextStyle(
+                  color: Color(0xFF507da0),
+                ),
                 selectedDate == null
                     ? "Choose Date & Time"
                     : "${selectedDate!.toLocal()}".split('.')[0],

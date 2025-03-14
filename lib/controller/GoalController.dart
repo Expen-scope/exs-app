@@ -6,12 +6,36 @@ import '../model/Goal.dart';
 class GoalController extends GetxController {
   var goals = <GoalModel>[].obs;
   final String apiUrl = "https://abo-najib.test/api";
-  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Fiby1uYWppYi50ZXN0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQxNjQ4NzQ4LCJleHAiOjE3NDE2NTIzNDgsIm5iZiI6MTc0MTY0ODc0OCwianRpIjoiaTJkQmxqTHhYcVNIYUN2QyIsInN1YiI6IjQiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.fVQH77i5xLW1D24cS1duxLDKdEpIVgVaAfJ5WkNQoGQ"; // ضع التوكن الصحيح هنا
+  final String token =
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Fiby1uYWppYi50ZXN0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQxNzc2MzgzLCJleHAiOjE3NDE3Nzk5ODMsIm5iZiI6MTc0MTc3NjM4MywianRpIjoia1QyQXc3QnY0b016ZVFBdCIsInN1YiI6IjQiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.N8eolIisMFbUcQTLqdQtlEa8GNF2ylH29I69hljgeAU";
   var isLoading = false.obs;
 
   @override
   void onInit() {
     fetchGoals();
+    goals.addAll([
+      GoalModel(
+          name: "رحلة إلى تركيا",
+          savedAmount: 500,
+          totalAmount: 2000,
+          type: "سفر",
+          id: 1,
+          startDate: DateTime.now()),
+      GoalModel(
+          name: "شراء لابتوب",
+          savedAmount: 800,
+          totalAmount: 1500,
+          type: "إلكترونيات",
+          id: 2,
+          startDate: DateTime.now()),
+      GoalModel(
+          name: "دراجة هوائية",
+          savedAmount: 300,
+          totalAmount: 1000,
+          type: "رياضة",
+          id: 3,
+          startDate: DateTime.now()),
+    ]);
     super.onInit();
   }
 

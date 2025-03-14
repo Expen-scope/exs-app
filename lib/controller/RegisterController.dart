@@ -64,16 +64,15 @@ class RegisterController extends GetxController {
           Get.snackbar(
               "خطأ", response.data['message'] ?? "حدث خطأ أثناء التسجيل");
         }
-
       } on Dio.DioException catch (e) {
-    print("❌ Dio Error: ${e.message}");
-    print("🔍 Response Data: ${e.response?.data}");
-    print("📡 Status Code: ${e.response?.statusCode}");
-    Get.snackbar("خطأ", e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
-    }
+        print("❌ Dio Error: ${e.message}");
+        print("🔍 Response Data: ${e.response?.data}");
+        print("📡 Status Code: ${e.response?.statusCode}");
+        Get.snackbar("خطأ",
+            e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
+      }
 
-
-    // on Dio.DioException catch (e) {
+      // on Dio.DioException catch (e) {
       //   Get.snackbar("خطأ",
       //       e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
       // }
