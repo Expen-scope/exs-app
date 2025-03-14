@@ -1,31 +1,33 @@
 import 'package:get/get.dart';
+import 'ExpensesController.dart';
+import 'IcomesContorller.dart';
+
 
 class TransactionController extends GetxController {
-  // قائمة المعاملات
-  var transactions = <Map<String, dynamic>>[].obs;
+  // المراجع الخاصة بالمداخيل والمصاريف
+  final IncomesController incomesController = Get.find<IncomesController>();
+  final ExpencesController expensesController = Get.find<ExpencesController>();
 
-  // إضافة معاملة جديدة
-  void addTransaction(Map<String, dynamic> transaction) {
-    transactions.add(transaction);
+  // إجمالي المداخيل والمصاريف
+  var totalIncome = 0.0.obs;
+  var totalExpenses = 0.0.obs;
+  var balance = 0.0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    calculateAnalytics();
   }
 
-  // تحديث معاملة
-  void updateTransaction(int index, Map<String, dynamic> updatedTransaction) {
-    transactions[index] = updatedTransaction;
+  // حساب إجمالي المداخيل والمصاريف والرصيد
+  void calculateAnalytics() {
+    totalIncome.value = incomesController.incomes.fold(0.0, (sum, item) => sum + item.value);
+    totalExpenses.value = expensesController.listExpenses.fold(0.0, (sum, item) => sum + item.value);
+    balance.value = totalIncome.value - totalExpenses.value;
   }
 
-  // حذف معاملة
-  void deleteTransaction(int index) {
-    transactions.removeAt(index);
-  }
-
-  // الحصول على أول 5 معاملات
-  List<Map<String, dynamic>> get topTransactions {
-    return transactions.take(5).toList();
-  }
-
-  // عرض جميع المعاملات
-  List<Map<String, dynamic>> getAllTransactions() {
-    return transactions;
+  // تحديث التحليلات عند تغيير البيانات
+  void updateAnalytics() {
+    calculateAnalytics();
   }
 }

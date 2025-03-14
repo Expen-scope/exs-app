@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: ("/HomePage"),
-          page: () => Homepage(),
+          page: () => HomePage(),
         ),
         GetPage(
           name: ("/IncomesScreens"),
