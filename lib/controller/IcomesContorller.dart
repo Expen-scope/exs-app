@@ -20,6 +20,8 @@ class IncomesController extends GetxController {
       Income(value: 300, type: "Investment"),
       Income(value: 700, type: "Business"),
       Income(value: 100, type: "Others"),
+      Income(value: 1500, type: "Freelance"),
+      Income(value: 1721.75, type: "Investment"),
     ]);
   }
 

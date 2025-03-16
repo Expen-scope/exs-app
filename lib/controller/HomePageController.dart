@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'ExpensesController.dart';
 import 'IcomesContorller.dart';
 
-
 class TransactionController extends GetxController {
   // المراجع الخاصة بالمداخيل والمصاريف
   final IncomesController incomesController = Get.find<IncomesController>();
@@ -21,8 +20,10 @@ class TransactionController extends GetxController {
 
   // حساب إجمالي المداخيل والمصاريف والرصيد
   void calculateAnalytics() {
-    totalIncome.value = incomesController.incomes.fold(0.0, (sum, item) => sum + item.value);
-    totalExpenses.value = expensesController.listExpenses.fold(0.0, (sum, item) => sum + item.value);
+    totalIncome.value =
+        incomesController.incomes.fold(0.0, (sum, item) => sum + item.value);
+    totalExpenses.value = expensesController.listExpenses
+        .fold(0.0, (sum, item) => sum + item.value);
     balance.value = totalIncome.value - totalExpenses.value;
   }
 

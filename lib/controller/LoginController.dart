@@ -10,7 +10,7 @@ class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
   var isLoading = false.obs;
   var isPasswordVisible = false.obs;
-  final String baseUrl = 'http://abo-najib.test/api/auth';
+  String baseUrl = 'http://10.0.2.2:8000/api/auth';
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -27,10 +27,9 @@ class LoginController extends GetxController {
     try {
       var response = await http.post(
         Uri.parse('$baseUrl/login'),
-        // headers: {
-        //   "Content-Type": "application/json",
-        //   "Accept": "application/json",
-        // },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: jsonEncode({
           'email': emailController.text.trim(),
           'password': passwordController.text.trim(),
@@ -44,7 +43,7 @@ class LoginController extends GetxController {
         var data = jsonDecode(response.body);
         UserModel user = UserModel.fromJson(data);
         Get.snackbar("نجاح", "تم تسجيل الدخول بنجاح");
-        Get.offAllNamed('/home');
+        Get.offAllNamed('/HomePage');
       } else {
         var errorMessage =
             jsonDecode(response.body)['message'] ?? "فشل تسجيل الدخول";

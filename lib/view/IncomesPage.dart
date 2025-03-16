@@ -71,23 +71,50 @@ class IncomesScreens extends StatelessWidget {
               return ListView.builder(
                 itemCount: controller.incomes.length,
                 itemBuilder: (context, index) {
-                  final income =
-                      controller.incomes[index]; // استخدام Income Model
+                  final income = controller.incomes[index];
                   final incomesInfo = controller.incomeListDATA[income.type];
 
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: incomesInfo?.color?.withOpacity(0.2) ??
-                          Colors.grey.withOpacity(0.2),
-                      child: incomesInfo?.icon ?? const Icon(Icons.error),
+                  return Card(
+                    key: ValueKey(income.id),
+                    elevation: 5,
+                    color: Colors.grey[200],
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    title: Text(income.type),
-                    subtitle: Text("\$${income.value.toStringAsFixed(2)}"),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        await controller.removeIncome(index, income.id!);
-                      },
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(15),
+                      leading: CircleAvatar(
+                        backgroundColor: incomesInfo?.color?.withOpacity(0.2) ??
+                            const Color(0xFF507da0).withOpacity(0.2),
+                        child: Icon(
+                          incomesInfo?.icon?.icon ?? Icons.attach_money,
+                          color: const Color(0xFF264653),
+                        ),
+                      ),
+                      title: Text(
+                        income.type,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF264653),
+                        ),
+                      ),
+                      subtitle: Text(
+                        "\$${income.value.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontSize: 16,
+                        ),
+                      ),
+                      trailing: IconButton(
+                        icon:
+                            const Icon(Icons.delete, color: Color(0xFF264653)),
+                        onPressed: () async {
+                          await controller.removeIncome(index, income.id!);
+                        },
+                      ),
                     ),
                   );
                 },

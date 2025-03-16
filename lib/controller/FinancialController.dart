@@ -9,9 +9,12 @@ class FinancialController extends GetxController {
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpenses = 0.0.obs;
   final RxString selectedPeriod = 'month'.obs;
-  final RxList<Map<String, dynamic>> transactions = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> fakeFinancialData = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> monthlyTrends = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> transactions =
+      <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> fakeFinancialData =
+      <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> monthlyTrends =
+      <Map<String, dynamic>>[].obs;
   final RxBool isLoading = true.obs;
 
   @override
@@ -35,7 +38,8 @@ class FinancialController extends GetxController {
     List<Map<String, dynamic>> tempMonthly = [];
     for (int i = 0; i < 6; i++) {
       tempMonthly.add({
-        'month': DateFormat('MMM').format(DateTime.now().subtract(Duration(days: 30 * i))),
+        'month': DateFormat('MMM')
+            .format(DateTime.now().subtract(Duration(days: 30 * i))),
         'income': rand.nextDouble() * 5000 + 3000,
         'expense': rand.nextDouble() * 4000 + 2000,
       });
@@ -44,7 +48,14 @@ class FinancialController extends GetxController {
 
     // توليد بيانات الفئات
     List<Map<String, dynamic>> tempCategories = [];
-    List<String> categories = ['الطعام', 'المواصلات', 'الترفيه', 'الفواتير', 'التسوق', 'الصحة'];
+    List<String> categories = [
+      'الطعام',
+      'المواصلات',
+      'الترفيه',
+      'الفواتير',
+      'التسوق',
+      'الصحة'
+    ];
     for (String category in categories) {
       tempCategories.add({
         'category': category,
@@ -70,7 +81,8 @@ class FinancialController extends GetxController {
       tempTransactions.add({
         'category': ['الطعام', 'المواصلات', 'الفواتير'][rand.nextInt(3)],
         'amount': (rand.nextDouble() * 500 + 50).toStringAsFixed(2),
-        'date': DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: i))),
+        'date': DateFormat('yyyy-MM-dd')
+            .format(DateTime.now().subtract(Duration(days: i))),
         'type': rand.nextBool() ? 'income' : 'expense',
       });
     }

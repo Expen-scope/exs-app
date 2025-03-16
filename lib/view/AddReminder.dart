@@ -71,7 +71,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbarofpage(TextPage: "Reminder"),
+      appBar: Appbarofpage(TextPage: "Add Reminder"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

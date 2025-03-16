@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
           page: () => Setting(),
         ),
       ],
-      initialRoute: "/HomePage",
+      initialRoute: "/Login",
     );
   }
 }

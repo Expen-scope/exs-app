@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
       drawer: DrawerClass(
         accountName: '',
         accountEmail: '',
-        accountInitial: '',
+        profileImageUrl: '',
       ),
       body: Obx(() {
         return controller.isLoading.value
@@ -39,7 +39,8 @@ class HomePage extends StatelessWidget {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text('التحليل المالي'),
+      title: Text('ABO NAJIB',
+          style: TextStyle(fontSize: 18, fontFamily: "Tajawal-Bold.ttf")),
       centerTitle: true,
       flexibleSpace: Container(
         decoration: BoxDecoration(
@@ -69,10 +70,8 @@ class HomePage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            'التقرير المالي الشامل',
-            style: TextStyle(color: Colors.white, fontSize: 24),
-          ),
+          Text('Financial analysis',
+              style: TextStyle(fontSize: 24, fontFamily: "Tajawal-Bold.ttf")),
           SizedBox(height: 10),
           Obx(() => SegmentedButton(
                 segments: [
@@ -103,17 +102,17 @@ class HomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildSummaryItem(
-                    title: 'الدخل',
+                    title: 'Income',
                     value: controller.totalIncome.value,
                     color: Colors.green,
                   ),
                   _buildSummaryItem(
-                    title: 'المصروفات',
+                    title: 'Expenses',
                     value: controller.totalExpenses.value,
                     color: Colors.red,
                   ),
                   _buildSummaryItem(
-                    title: 'الصافي',
+                    title: 'Net',
                     value: controller.totalIncome.value -
                         controller.totalExpenses.value,
                     color: (controller.totalIncome.value -
@@ -165,7 +164,7 @@ class HomePage extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('توزيع المصروفات', style: TextStyle(fontSize: 18)),
+            Text('distribution', style: TextStyle(fontSize: 18)),
             SizedBox(height: 0.1),
             SizedBox(
               height: 225,
@@ -201,7 +200,7 @@ class HomePage extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('الاتجاهات الشهرية', style: TextStyle(fontSize: 18)),
+            Text('Monthly trends', style: TextStyle(fontSize: 18)),
             SizedBox(height: 20),
             SizedBox(
               height: 350,
@@ -273,7 +272,7 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('نسبة الصرف'),
+                        Text('Exchange ratio'),
                         Text(
                           '${(controller.totalExpenses.value / controller.totalIncome.value * 100).toStringAsFixed(1)}%',
                           style: TextStyle(
@@ -299,38 +298,36 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('آخر المعاملات', style: TextStyle(fontSize: 18)),
+              Text('Latest transactions', style: TextStyle(fontSize: 18)),
               SizedBox(height: 10),
               Obx(() => SizedBox(
-                height: 210, // ارتفاع مناسب لعرض 3 عناصر تقريبًا
-                child: ListView.builder(
-                  itemCount: controller.transactions.length,
-                  itemBuilder: (context, index) {
-                    final transaction = controller.transactions[index];
-                    return ListTile(
-                      leading: Icon(
-                        transaction['type'] == 'income'
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward,
-                        color: transaction['type'] == 'income'
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                      title: Text(transaction['category']),
-                      subtitle: Text(transaction['date']),
-                      trailing: Text('\$${transaction['amount']}'),
-                    );
-                  },
-                ),
-              )),
+                    height: 210, // ارتفاع مناسب لعرض 3 عناصر تقريبًا
+                    child: ListView.builder(
+                      itemCount: controller.transactions.length,
+                      itemBuilder: (context, index) {
+                        final transaction = controller.transactions[index];
+                        return ListTile(
+                          leading: Icon(
+                            transaction['type'] == 'income'
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
+                            color: transaction['type'] == 'income'
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                          title: Text(transaction['category']),
+                          subtitle: Text(transaction['date']),
+                          trailing: Text('\$${transaction['amount']}'),
+                        );
+                      },
+                    ),
+                  )),
             ],
           ),
         ),
       ),
     );
   }
-
-
 }
 
 class AnimatedCount extends StatelessWidget {

@@ -15,7 +15,7 @@ class GoalController extends GetxController {
     fetchGoals();
     goals.addAll([
       GoalModel(
-          name: "رحلة إلى تركيا",
+          name: "رحلة إلى سويسرا",
           savedAmount: 500,
           totalAmount: 2000,
           type: "سفر",
