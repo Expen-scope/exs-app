@@ -4,6 +4,7 @@ import '../controller/LoginController.dart';
 
 class LoginPage extends StatelessWidget {
   final LoginController controller = Get.put(LoginController());
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class LoginPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
           child: Form(
-            key: controller.formKey, // استخدام formKey
+            key: controller.formKey, // تأكد من استخدام نفس المفتاح
             child: ListView(
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.12),

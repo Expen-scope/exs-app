@@ -80,7 +80,7 @@ class Setting extends StatelessWidget {
                   ),
                   SizedBox(height: hight(context) * 0.02),
                   Text(
-                    'تغيير الصورة',
+                    'Change your photo',
                     style: TextStyle(
                       color: Color(0xFF507da0),
                       fontWeight: FontWeight.w600,
@@ -103,7 +103,7 @@ class Setting extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
-                        'تغيير كلمة المرور',
+                        'Change your password',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -114,19 +114,19 @@ class Setting extends StatelessWidget {
                     SizedBox(height: hight(context) * 0.02),
                     _buildPasswordField(
                       context,
-                      label: 'كلمة المرور الحالية',
+                      label: 'old password',
                       icon: Icons.lock_outline,
                     ),
                     SizedBox(height: hight(context) * 0.02),
                     _buildPasswordField(
                       context,
-                      label: 'كلمة المرور الجديدة',
+                      label: 'new password',
                       icon: Icons.lock_reset,
                     ),
                     SizedBox(height: hight(context) * 0.02),
                     _buildPasswordField(
                       context,
-                      label: 'تأكيد كلمة المرور الجديدة',
+                      label: 'confirm password',
                       icon: Icons.lock_clock,
                     ),
                     SizedBox(height: hight(context) * 0.04),
@@ -142,7 +142,7 @@ class Setting extends StatelessWidget {
                         ),
                         onPressed: () {},
                         child: Text(
-                          'تحديث كلمة المرور',
+                          'Update',
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

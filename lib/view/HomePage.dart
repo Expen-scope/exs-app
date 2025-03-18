@@ -40,7 +40,10 @@ class HomePage extends StatelessWidget {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text('ABO NAJIB',
-          style: TextStyle(fontSize: 18, fontFamily: "Tajawal-Bold.ttf")),
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontFamily: "Tajawal-Bold.ttf")),
       centerTitle: true,
       flexibleSpace: Container(
         decoration: BoxDecoration(
@@ -71,7 +74,10 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           Text('Financial analysis',
-              style: TextStyle(fontSize: 24, fontFamily: "Tajawal-Bold.ttf")),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: "Tajawal-Bold.ttf")),
           SizedBox(height: 10),
           Obx(() => SegmentedButton(
                 segments: [

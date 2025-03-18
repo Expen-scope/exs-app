@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,42 +19,43 @@ class LoginController extends GetxController {
   }
 
   void validateInputs() {
-    if (formKey.currentState!.validate()) {
+    final currentState = formKey.currentState;
+    if (currentState != null && currentState.validate()) {
       loginUser();
+    } else {
+      print('Form state is null or validation failed');
     }
   }
 
   Future<void> loginUser() async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
-
     try {
       final response = await http
           .post(
-        Uri.parse('$baseUrl/login'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          'email': emailController.text.trim(),
-          'password': passwordController.text.trim(),
-        }),
-      )
+            Uri.parse('$baseUrl/login'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({
+              'email': emailController.text.trim(),
+              'password': passwordController.text.trim(),
+            }),
+          )
           .timeout(Duration(seconds: 10));
-
       final responseBody = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        final token = responseBody['token']; // استخراج التوكن من الاستجابة
-
+      // التعديل 1: التحقق من حالة الاستجابة ومن الـ status
+      if (response.statusCode == 200 && responseBody['status'] == 'success') {
+        // التعديل 2: استخراج التوكين من مفتاح authorisation
+        final token = responseBody['authorisation']['token'];
         if (token != null) {
-          await _saveToken(token); // حفظ التوكن في SharedPreferences
-          UserModel user = UserModel.fromJson(responseBody);
+          await _saveToken(token);
+          // التعديل 3: استخراج بيانات المستخدم من مفتاح user
+          UserModel user = UserModel.fromJson(responseBody['user']);
           _showSuccessDialog();
         } else {
-          // إذا لم يكن هناك توكن في الاستجابة، عرض الخطأ المناسب
-          _handleErrorResponse({"message": "Token not found in response"});
+          _handleErrorResponse({"message": "لم يتم العثور على التوكين"});
         }
       } else {
-        // استجابة غير صحيحة، استخدم الرسالة التي يرجعها السيرفر
         _handleErrorResponse(responseBody);
       }
     } on http.ClientException catch (e) {
@@ -74,7 +74,9 @@ class LoginController extends GetxController {
 
   Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token); // حفظ التوكن في SharedPreferences
+    await prefs.setString('auth_token', token);
+    // إضافة اختيارية: حفظ بيانات المستخدم إذا لزم الأمر
+    // await prefs.setString('user_data', jsonEncode(user.toJson()));
   }
 
   void _showSuccessDialog() {
@@ -94,7 +96,7 @@ class LoginController extends GetxController {
   }
 
   void _handleErrorResponse(dynamic responseBody) {
-    final error = responseBody['message'] ?? "فشل تسجيل الدخول";  // استخدم رسالة الخطأ من الاستجابة الفعلية
+    final error = responseBody['message'] ?? "فشل تسجيل الدخول";
     Get.dialog(
       AlertDialog(
         title: Text("خطأ", style: TextStyle(color: Colors.red)),
