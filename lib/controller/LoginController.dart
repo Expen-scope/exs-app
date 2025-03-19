@@ -9,51 +9,53 @@ import 'package:flutter/material.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(); 
   var isLoading = false.obs;
   var isPasswordVisible = false.obs;
   String baseUrl = 'http://10.0.2.2:8000/api/auth';
 
+  // Toggle password visibility
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
+  // Validate form inputs
   void validateInputs() {
-    final currentState = formKey.currentState;
-    if (currentState != null && currentState.validate()) {
+    if (formKey.currentState!.validate()) {
       loginUser();
-    } else {
-      print('Form state is null or validation failed');
     }
   }
 
+  // Function to login user
   Future<void> loginUser() async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
       final response = await http
           .post(
-            Uri.parse('$baseUrl/login'),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              'email': emailController.text.trim(),
-              'password': passwordController.text.trim(),
-            }),
-          )
+        Uri.parse('$baseUrl/login'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          'email': emailController.text.trim(),
+          'password': passwordController.text.trim(),
+        }),
+      )
           .timeout(Duration(seconds: 10));
       final responseBody = jsonDecode(response.body);
 
-      // التعديل 1: التحقق من حالة الاستجابة ومن الـ status
-      if (response.statusCode == 200 && responseBody['status'] == 'success') {
-        // التعديل 2: استخراج التوكين من مفتاح authorisation
-        final token = responseBody['authorisation']['token'];
+      if (response.statusCode == 200) {
+        final token = responseBody['authorisation']['token']; // Get token from the response
         if (token != null) {
+          // Save token in SharedPreferences
           await _saveToken(token);
-          // التعديل 3: استخراج بيانات المستخدم من مفتاح user
-          UserModel user = UserModel.fromJson(responseBody['user']);
+
+          // You can also save user data if needed
+          final user = responseBody['user'];
+          await _saveUser(user);
+
           _showSuccessDialog();
         } else {
-          _handleErrorResponse({"message": "لم يتم العثور على التوكين"});
+          _handleErrorResponse({"message": "Token not found in response"});
         }
       } else {
         _handleErrorResponse(responseBody);
@@ -72,13 +74,21 @@ class LoginController extends GetxController {
     }
   }
 
+  // Save token to SharedPreferences
   Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
-    // إضافة اختيارية: حفظ بيانات المستخدم إذا لزم الأمر
-    // await prefs.setString('user_data', jsonEncode(user.toJson()));
+    await prefs.setString('auth_token', token); // Save token
   }
 
+  // Save user data to SharedPreferences
+  Future<void> _saveUser(dynamic user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('user_id', user['id']); // Save user ID
+    await prefs.setString('user_name', user['name']); // Save user name
+    await prefs.setString('user_email', user['email']); // Save user email
+  }
+
+  // Show success dialog after successful login
   void _showSuccessDialog() {
     Get.dialog(
       AlertDialog(
@@ -95,6 +105,7 @@ class LoginController extends GetxController {
     );
   }
 
+  // Handle error response from the server
   void _handleErrorResponse(dynamic responseBody) {
     final error = responseBody['message'] ?? "فشل تسجيل الدخول";
     Get.dialog(
@@ -106,6 +117,7 @@ class LoginController extends GetxController {
     );
   }
 
+  // Handle network errors
   void _handleNetworkError(String message) {
     Get.dialog(
       AlertDialog(

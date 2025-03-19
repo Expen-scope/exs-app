@@ -7,7 +7,7 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      name: json['user']['name'], // تعديل للوصول للبيانات داخل `user`
+      name: json['user']['name'],
       email: json['user']['email'],
       token: json['token'] ?? '',
     );
