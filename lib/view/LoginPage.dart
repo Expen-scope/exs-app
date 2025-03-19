@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/LoginController.dart';
 
-class LoginPage extends StatelessWidget {
-  final LoginController controller = Get.put(LoginController());
+class LoginPage extends GetView<LoginController> {
   final _formKey = GlobalKey<FormState>();
 
   @override

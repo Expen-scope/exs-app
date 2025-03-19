@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 import 'controller/IcomesContorller.dart';
 import 'controller/LoginController.dart';
 import 'controller/RegisterController.dart';
+import 'controller/login_binding.dart';
 
 void main() async {
   Get.put(ExpencesController());
@@ -44,8 +45,9 @@ class MyApp extends StatelessWidget {
       getPages: [
         // GetPage(name: ("/"), page: () => SplashScreen()),
         GetPage(
-          name: ("/Login"),
+          name: '/Login',
           page: () => LoginPage(),
+          binding: LoginBinding(),
         ),
         GetPage(
           name: ("/Register"),

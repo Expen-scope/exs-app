@@ -81,9 +81,9 @@ class HomePage extends StatelessWidget {
           SizedBox(height: 10),
           Obx(() => SegmentedButton(
                 segments: [
-                  ButtonSegment(value: 'week', label: Text('أسبوع')),
-                  ButtonSegment(value: 'month', label: Text('شهر')),
-                  ButtonSegment(value: 'year', label: Text('سنة')),
+                  ButtonSegment(value: 'week', label: Text('week')),
+                  ButtonSegment(value: 'month', label: Text('month')),
+                  ButtonSegment(value: 'year', label: Text('year')),
                 ],
                 selected: {controller.selectedPeriod.value},
                 onSelectionChanged: (newSelection) {

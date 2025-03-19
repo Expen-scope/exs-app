@@ -4,7 +4,7 @@ import 'package:dio/dio.dart' as Dio;
 import '../model/User.dart';
 
 class RegisterController extends GetxController {
-  // ملاحظة: تم الحفاظ على جميع المتغيرات كما هي
+  // متغيرات المراقبة
   var name = ''.obs;
   var email = ''.obs;
   var password = ''.obs;
@@ -15,25 +15,38 @@ class RegisterController extends GetxController {
   var confirmPasswordError = RxnString();
   var isLoading = false.obs;
 
-  // التعديل 1: إضافة content-type لتحديد شكل البيانات المرسلة
   final Dio.Dio dio = Dio.Dio(Dio.BaseOptions(
     baseUrl: 'http://10.0.2.2:8000/api/auth',
-    contentType:
-        Dio.Headers.jsonContentType, // إضافة مهمة لتوضيح أننا نرسل JSON
+    contentType: Dio.Headers.jsonContentType,
+    validateStatus: (status) => status! < 500,
   ));
 
   void validateInputs() {
-    // نفس المنطق السابق
     nameError.value = name.value.isEmpty ? "يجب إدخال الاسم" : null;
-    emailError.value =
-        email.value.isEmpty ? "يجب إدخال البريد الإلكتروني" : null;
-    passwordError.value =
-        password.value.isEmpty ? "يجب إدخال كلمة المرور" : null;
-    confirmPasswordError.value =
-        confirmPassword.value.isEmpty ? "يجب إدخال تأكيد كلمة المرور" : null;
 
-    if (password.value != confirmPassword.value) {
+    if (email.value.isEmpty) {
+      emailError.value = "يجب إدخال البريد الإلكتروني";
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+        .hasMatch(email.value)) {
+      emailError.value = "صيغة البريد الإلكتروني غير صحيحة";
+    } else {
+      emailError.value = null;
+    }
+
+    if (password.value.isEmpty) {
+      passwordError.value = "يجب إدخال كلمة المرور";
+    } else if (password.value.length < 8) {
+      passwordError.value = "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+    } else {
+      passwordError.value = null;
+    }
+
+    if (confirmPassword.value.isEmpty) {
+      confirmPasswordError.value = "يجب إدخال تأكيد كلمة المرور";
+    } else if (password.value != confirmPassword.value) {
       confirmPasswordError.value = "كلمات المرور غير متطابقة";
+    } else {
+      confirmPasswordError.value = null;
     }
   }
 
@@ -45,8 +58,9 @@ class RegisterController extends GetxController {
         passwordError.value == null &&
         confirmPasswordError.value == null) {
       isLoading.value = true;
+
       try {
-        Dio.Response response = await dio.post(
+        final response = await dio.post(
           '/register',
           data: {
             'name': name.value,
@@ -55,24 +69,73 @@ class RegisterController extends GetxController {
           },
         );
 
-        // التعديل 2: تعديل طريقة استخراج بيانات المستخدم حسب الرد من API
-        if (response.statusCode == 201) {
-          UserModel user = UserModel.fromJson(
-              response.data['user']); // استخراج من مفتاح 'user'
+        // طباعة الرد الكامل للتشخيص
+        print('✅ Full Response: ${response.data}');
+
+        if ([200, 201].contains(response.statusCode)) {
+          // 1. التحقق من وجود البيانات الأساسية
+          if (response.data == null ||
+              response.data['user'] == null ||
+              response.data['authorisation'] == null) {
+            throw FormatException('بيانات الاستجابة غير صالحة');
+          }
+
+          final userData = response.data['user'] as Map<String, dynamic>;
+          final authData =
+              response.data['authorisation'] as Map<String, dynamic>;
+
+          // 2. التحقق من الحقول المطلوبة
+          if (!userData.containsKey('name') || !userData.containsKey('email')) {
+            throw FormatException('بيانات المستخدم ناقصة');
+          }
+
+          // 3. معالجة التوكن بشكل آمن
+          final token = authData['token']?.toString() ?? '';
+
+          // 4. إنشاء النموذج مع القيم الافتراضية
+          final user = UserModel(
+            id: userData['id'] as int? ?? 0,
+            name: userData['name']?.toString() ?? 'غير معروف',
+            email: userData['email']?.toString() ?? 'بريد إلكتروني غير معروف',
+            createdAt: userData['created_at']?.toString() ?? '',
+            updatedAt: userData['updated_at']?.toString() ?? '',
+            token: token,
+          );
+
           showSuccessDialog();
         } else {
-          showErrorDialog(response.data['message'] ?? "حدث خطأ أثناء التسجيل");
+          handleServerErrors(response.data);
         }
       } on Dio.DioException catch (e) {
-        // التعديل 3: تحسين رسائل الخطأ للتسجيل
-        print("❌ Dio Error: ${e.message}");
-        print("🔍 Response Data: ${e.response?.data}");
-        print("📡 Status Code: ${e.response?.statusCode}");
-        showErrorDialog(
-            e.response?.data['message'] ?? "حدث خطأ في الاتصال بالسيرفر");
+        print('🚨 Dio Error: ${e.message}');
+        showErrorDialog("خطأ في الاتصال: ${e.message ?? 'حدث خطأ غير معروف'}");
+      } on FormatException catch (e) {
+        print('❌ Format Error: $e');
+        showErrorDialog("خطأ في تنسيق البيانات: ${e.message}");
+      } catch (e) {
+        print('‼️ Critical Error: $e');
+        showErrorDialog("حدث خطأ غير متوقع: ${e.toString()}");
       } finally {
         isLoading.value = false;
       }
+    }
+  }
+
+  void handleServerErrors(Map<String, dynamic>? data) {
+    if (data?['errors'] != null) {
+      final errors = data!['errors'];
+
+      if (errors.containsKey('email')) {
+        emailError.value = errors['email'][0];
+      }
+      if (errors.containsKey('password')) {
+        passwordError.value = errors['password'][0];
+      }
+      if (errors.containsKey('name')) {
+        nameError.value = errors['name'][0];
+      }
+    } else {
+      showErrorDialog(data?['message'] ?? "حدث خطأ غير متوقع");
     }
   }
 
@@ -83,7 +146,10 @@ class RegisterController extends GetxController {
         content: const Text("تم إنشاء الحساب بنجاح"),
         actions: [
           TextButton(
-            onPressed: () => Get.back(canPop: false),
+            onPressed: () {
+              Get.back();
+              Get.offAllNamed('/Login'); // التوجيه بعد الإغلاق
+            },
             child: const Text("موافق"),
           ),
         ],
@@ -95,16 +161,16 @@ class RegisterController extends GetxController {
   void showErrorDialog(String message) {
     Get.dialog(
       AlertDialog(
-        title: const Text("error"),
+        title: const Text("خطأ"),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text("ok"),
+            child: const Text("حاول مجدداً"),
           ),
         ],
       ),
-      barrierDismissible: false,
+      barrierDismissible: true,
     );
   }
 }

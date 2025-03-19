@@ -1,103 +1,115 @@
 import 'dart:async';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:abo_najib_2/controller/user_controller.dart';
+import 'package:get/get.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/User.dart';
 import 'package:flutter/material.dart';
 
 class LoginController extends GetxController {
+  final Dio _dio = Dio(BaseOptions(
+    baseUrl: 'http://10.0.2.2:8000/api/auth',
+    contentType: Headers.jsonContentType,
+  ));
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final formKey = GlobalKey<FormState>(); 
+  final formKey = GlobalKey<FormState>();
   var isLoading = false.obs;
   var isPasswordVisible = false.obs;
-  String baseUrl = 'http://10.0.2.2:8000/api/auth';
 
-  // Toggle password visibility
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
+  void togglePasswordVisibility() => isPasswordVisible.toggle();
 
-  // Validate form inputs
   void validateInputs() {
-    if (formKey.currentState!.validate()) {
-      loginUser();
-    }
+    if (formKey.currentState!.validate()) loginUser();
   }
 
-  // Function to login user
   Future<void> loginUser() async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
+
     try {
-      final response = await http
-          .post(
-        Uri.parse('$baseUrl/login'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
+      final response = await _dio.post(
+        '/login',
+        data: {
           'email': emailController.text.trim(),
           'password': passwordController.text.trim(),
-        }),
-      )
-          .timeout(Duration(seconds: 10));
-      final responseBody = jsonDecode(response.body);
+        },
+      );
 
-      if (response.statusCode == 200) {
-        final token = responseBody['authorisation']['token']; // Get token from the response
-        if (token != null) {
-          // Save token in SharedPreferences
-          await _saveToken(token);
-
-          // You can also save user data if needed
-          final user = responseBody['user'];
-          await _saveUser(user);
-
-          _showSuccessDialog();
-        } else {
-          _handleErrorResponse({"message": "Token not found in response"});
-        }
-      } else {
-        _handleErrorResponse(responseBody);
+      // 3. التحقق من هيكل البيانات
+      if (response.data['authorisation']?['token'] == null) {
+        throw Exception('Token not found');
       }
-    } on http.ClientException catch (e) {
-      _handleNetworkError(e.message ?? 'خطأ في الاتصال بالإنترنت');
-    } on TimeoutException {
-      _handleNetworkError('انتهى وقت الانتظار');
-    } on FormatException {
-      _handleNetworkError('خطأ في تنسيق البيانات');
+
+      // 4. استخدام UserModel بشكل صحيح
+      final user = UserModel.fromJson(response.data);
+      await _saveAuthData(user);
+
+      _showSuccessDialog();
+    } on DioException catch (e) {
+      // 5. معالجة مفصلة لأخطاء Dio
+      _handleDioError(e);
     } catch (e) {
-      print('$e');
-      _handleNetworkError('خطأ غير متوقع');
+      _handleGenericError(e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Save token to SharedPreferences
-  Future<void> _saveToken(String token) async {
+  Future<void> _saveAuthData(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token); // Save token
+    await prefs.setString('auth_token', user.token);
+    await prefs.setString('user_data', json.encode(user.toJson()));
+    Get.find<UserController>().user.value = user; // تحديث الـ UserController
   }
 
-  // Save user data to SharedPreferences
-  Future<void> _saveUser(dynamic user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('user_id', user['id']); // Save user ID
-    await prefs.setString('user_name', user['name']); // Save user name
-    await prefs.setString('user_email', user['email']); // Save user email
+  void _handleDioError(DioException e) {
+    final errorMessage =
+        e.response?.data?['message'] ?? e.message ?? 'فشل تسجيل الدخول';
+
+    Get.dialog(
+      AlertDialog(
+        title: const Text("خطأ", style: TextStyle(color: Colors.red)),
+        content: Text(_parseDioError(e)),
+        actions: [TextButton(onPressed: Get.back, child: const Text("موافق"))],
+      ),
+    );
   }
 
-  // Show success dialog after successful login
+  String _parseDioError(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+        return 'انتهى وقت الاتصال';
+      case DioExceptionType.badResponse:
+        return e.response?.data?['message'] ?? 'خطأ في بيانات الاعتماد';
+      case DioExceptionType.unknown:
+        return 'خطأ في الاتصال بالخادم';
+      default:
+        return 'خطأ غير متوقع';
+    }
+  }
+
+  void _handleGenericError(dynamic e) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("خطأ"),
+        content: Text(e.toString()),
+        actions: [TextButton(onPressed: Get.back, child: const Text("موافق"))],
+      ),
+    );
+  }
+
   void _showSuccessDialog() {
     Get.dialog(
       AlertDialog(
-        title: Text("نجاح", style: TextStyle(color: Colors.green)),
-        content: Text("تم تسجيل الدخول بنجاح"),
+        title: const Text("نجاح", style: TextStyle(color: Colors.green)),
+        content: const Text("تم تسجيل الدخول بنجاح"),
         actions: [
           TextButton(
             onPressed: () => Get.offAllNamed('/HomePage'),
-            child: Text("موافق"),
+            child: const Text("موافق"),
           ),
         ],
       ),
@@ -105,33 +117,8 @@ class LoginController extends GetxController {
     );
   }
 
-  // Handle error response from the server
-  void _handleErrorResponse(dynamic responseBody) {
-    final error = responseBody['message'] ?? "فشل تسجيل الدخول";
-    Get.dialog(
-      AlertDialog(
-        title: Text("خطأ", style: TextStyle(color: Colors.red)),
-        content: Text(error),
-        actions: [TextButton(onPressed: Get.back, child: Text("موافق"))],
-      ),
-    );
-  }
-
-  // Handle network errors
-  void _handleNetworkError(String message) {
-    Get.dialog(
-      AlertDialog(
-        title: Text("خطأ اتصال"),
-        content: Text(message),
-        actions: [TextButton(onPressed: Get.back, child: Text("موافق"))],
-      ),
-    );
-  }
-
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
     super.onClose();
   }
 }
