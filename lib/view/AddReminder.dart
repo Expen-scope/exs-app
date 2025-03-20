@@ -14,16 +14,23 @@ class AddReminderScreen extends StatefulWidget {
 class _AddReminderScreenState extends State<AddReminderScreen> {
   final ReminderController reminderController = Get.find();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
   Future<void> saveReminder() async {
     if (nameController.text.isEmpty ||
-        amountController.text.isEmpty ||
+        priceController.text.isEmpty ||
         selectedDate == null ||
         selectedTime == null) {
       Get.snackbar("خطأ", "يرجى ملء جميع الحقول");
+      return;
+    }
+
+    try {
+      double.parse(priceController.text);
+    } catch (e) {
+      Get.snackbar("خطأ", "المبلغ يجب أن يكون رقمًا صحيحًا");
       return;
     }
 
@@ -36,14 +43,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     );
 
     ReminderModel newReminder = ReminderModel(
-      id: null, // سيتم إنشاؤه في السيرفر
       name: nameController.text,
-      amount: double.parse(amountController.text),
-      reminderDate: finalDateTime,
+      price: double.parse(priceController.text),
+      time: finalDateTime,
+      id: null,
     );
 
-    await reminderController.addReminder(newReminder);
-    Get.back();
+    bool success = await reminderController.addReminder(newReminder);
+    if (success) {
+      Get.back();
+    }
   }
 
   Future<void> pickDate() async {
@@ -94,7 +103,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
-                controller: amountController,
+                controller: priceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Amount",

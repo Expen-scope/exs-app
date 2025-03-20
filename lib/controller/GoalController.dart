@@ -5,7 +5,7 @@ import '../model/Goal.dart';
 
 class GoalController extends GetxController {
   var goals = <GoalModel>[].obs;
-  final String apiUrl = "https://abo-najib.test/api";
+  final String apiUrl = "http://10.0.2.2:8000/api/";
   final String token =
       "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Fiby1uYWppYi50ZXN0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQxNzc2MzgzLCJleHAiOjE3NDE3Nzk5ODMsIm5iZiI6MTc0MTc3NjM4MywianRpIjoia1QyQXc3QnY0b016ZVFBdCIsInN1YiI6IjQiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.N8eolIisMFbUcQTLqdQtlEa8GNF2ylH29I69hljgeAU";
   var isLoading = false.obs;

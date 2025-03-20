@@ -35,8 +35,7 @@ class Reminders extends StatelessWidget {
           },
           itemBuilder: (context, index) {
             final reminder = reminderController.reminders[index];
-            final remainingDuration =
-                reminder.reminderDate.difference(DateTime.now());
+            final remainingDuration = reminder.time.difference(DateTime.now());
             final remainingMinutes = remainingDuration.inMinutes % 60;
             final remainingSeconds = remainingDuration.inSeconds % 60;
 
@@ -55,11 +54,11 @@ class Reminders extends StatelessWidget {
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  'Amount: ${currencyFormat.format(reminder.amount)}\n'
+                  'Amount: ${currencyFormat.format(reminder.price)}\n'
                   'Due in: ${remainingDuration.inDays} days, '
                   '${remainingMinutes} minutes, '
                   '${remainingSeconds} seconds\n'
-                  'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.reminderDate)}',
+                  'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.time)}',
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                 ),
                 trailing: IconButton(

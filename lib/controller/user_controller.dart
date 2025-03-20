@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,16 +37,20 @@ class UserController extends GetxController {
     try {
       isLoading.value = true;
       String? userData = _prefs.getString('user_data');
-      if (userData != null) {
+      String? token = _prefs.getString('auth_token');
+
+      if (userData != null && token != null) {
         user.value = UserModel.fromJson(json.decode(userData));
         isLoggedIn.value = true;
+        print('User data loaded: ${user.value?.name}'); // log
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load user data: $e');
+      print('Error loading user data: $e');
     } finally {
       isLoading.value = false;
     }
   }
+
 
   Future<void> initializeUser() async {
     try {
@@ -73,7 +78,13 @@ class UserController extends GetxController {
 
   Future<bool> _verifyTokenWithServer() async {
     try {
-      return true;
+      final response = await Dio().get(
+        'http://10.0.2.2:8000/api/verify-token',
+        options: Options(headers: {
+          'Authorization': 'Bearer ${_prefs.getString('auth_token')}'
+        }),
+      );
+      return response.statusCode == 200;
     } catch (e) {
       return false;
     }

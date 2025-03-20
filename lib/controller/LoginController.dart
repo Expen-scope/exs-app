@@ -62,7 +62,12 @@ class LoginController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', user.token);
     await prefs.setString('user_data', json.encode(user.toJson()));
-    Get.find<UserController>().user.value = user; // تحديث الـ UserController
+
+    Get.find<UserController>()
+      ..user.value = user
+      ..isLoggedIn.value = true;
+
+    print('Token saved: ${user.token}');
   }
 
   void _handleDioError(DioException e) {

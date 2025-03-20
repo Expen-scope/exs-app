@@ -65,7 +65,7 @@ class ExpencesController extends GetxController {
     // جلب البيانات من API في الوضع العادي
     try {
       final response = await http
-          .get(Uri.parse('https://your-laravel-api.com/api/expenses'));
+          .get(Uri.parse('http://10.0.2.2:8000/api/'));
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         listExpenses.value = List<Expense>.from(

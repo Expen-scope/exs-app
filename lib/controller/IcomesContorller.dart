@@ -11,7 +11,7 @@ class IncomesController extends GetxController {
   var isLoading = false.obs;
   var selectedType = "Salaries and Wages".obs;
   final Dio.Dio dio = Dio.Dio();
-  final String apiUrl = 'https://abo-najib.test/api/addIncome/';
+  final String apiUrl = 'http://10.0.2.2:8000/api/';
 
   void addFakeData() {
     incomes.addAll([

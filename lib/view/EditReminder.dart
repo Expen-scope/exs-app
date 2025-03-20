@@ -18,6 +18,7 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
   final ReminderController reminderController = Get.find();
   late TextEditingController nameController;
   late TextEditingController amountController;
+  late TextEditingController priceController;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
@@ -25,15 +26,14 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.reminder.name);
-    amountController =
-        TextEditingController(text: widget.reminder.amount.toString());
-    selectedDate = widget.reminder.reminderDate;
-    selectedTime = TimeOfDay.fromDateTime(widget.reminder.reminderDate);
+    priceController = TextEditingController(text: widget.reminder.price.toString());
+    selectedDate = widget.reminder.time;
+    selectedTime = TimeOfDay.fromDateTime(widget.reminder.time);
   }
 
   Future<void> updateReminder() async {
     if (nameController.text.isEmpty ||
-        amountController.text.isEmpty ||
+        priceController.text.isEmpty ||
         selectedDate == null ||
         selectedTime == null) {
       Get.snackbar("Error", "Please fill all required fields");
@@ -51,14 +51,15 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
     ReminderModel updatedReminder = ReminderModel(
       id: widget.reminder.id,
       name: nameController.text,
-      amount: double.parse(amountController.text),
-      reminderDate: finalDateTime,
+      price: double.parse(priceController.text),
+      time: finalDateTime,
     );
 
-    await reminderController.updateReminder(updatedReminder);
-    Get.back();
+    bool success = await reminderController.updateReminder(updatedReminder);
+    if (success) {
+      Get.back();
+    }
   }
-
   Future<void> pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
