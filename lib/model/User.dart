@@ -5,6 +5,7 @@ class UserModel {
   final int id;
   final String createdAt;
   final String updatedAt;
+  final String? profileImageUrl;
 
   UserModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserModel {
     required this.token,
     required this.createdAt,
     required this.updatedAt,
+    this.profileImageUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class UserModel {
       token: json['authorisation']['token']?.toString() ?? '',
       createdAt: json['user']['created_at']?.toString() ?? '',
       updatedAt: json['user']['updated_at']?.toString() ?? '',
+      profileImageUrl: json['profileImageUrl'],
     );
   }
 
@@ -33,5 +36,21 @@ class UserModel {
         'token': token,
         'created_at': createdAt,
         'updated_at': updatedAt,
+        'profileImageUrl': profileImageUrl,
       };
+  UserModel copyWith({
+    String? name,
+    String? email,
+    String? profileImageUrl,
+  }) {
+    return UserModel(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      id: id,
+      token: token,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
 }

@@ -16,18 +16,29 @@ import 'package:abo_najib_2/view/Setting.dart';
 import 'package:abo_najib_2/view/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'controller/IcomesContorller.dart';
 import 'controller/LoginController.dart';
 import 'controller/RegisterController.dart';
 import 'controller/login_binding.dart';
+import 'controller/user_controller.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Get.putAsync(() => SharedPreferences.getInstance());
+
+  Get.put(UserController()..loadUserData());
+
+  Get.put(UserController()..initializeUser());
   Get.put(ExpencesController());
   Get.put(IncomesController());
   Get.put(GoalController());
   Get.put(ReminderController());
+
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => RegisterController());
+
   runApp(MyApp());
 }
 
@@ -90,7 +101,7 @@ class MyApp extends StatelessWidget {
           page: () => Setting(),
         ),
       ],
-      initialRoute: "/Login",
+      initialRoute: '/MyCustomSplashScreen',
     );
   }
 }

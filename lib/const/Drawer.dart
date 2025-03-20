@@ -3,137 +3,74 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../controller/user_controller.dart';
 import '../view/ReminderPage.dart';
 
-class DrawerClass extends StatelessWidget {
-  final String accountName;
-  final String accountEmail;
-  final String profileImageUrl;
-
-  const DrawerClass({
-    super.key,
-    required this.accountName,
-    required this.accountEmail,
-    required this.profileImageUrl,
-  });
+class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final UserController userController = Get.find<UserController>();
+
     return Drawer(
       child: Column(
         children: [
-          // Drawer Header
-          UserAccountsDrawerHeader(
+          Obx(() => UserAccountsDrawerHeader(
             accountName: Text(
-              'kheder',
+              userController.user.value?.name ?? 'Guest',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             accountEmail: Text(
-              'kheder@gmail.com',
+              userController.user.value?.email ?? 'No email',
               style: const TextStyle(
                 fontSize: 14,
               ),
             ),
-            currentAccountPicture: GestureDetector(
-              onTap: () async {
-                // إضافة منطق تغيير الصورة
-                final ImagePicker picker = ImagePicker();
-                final XFile? image = await picker.pickImage(
-                  source: ImageSource.gallery,
-                  imageQuality: 85,
-                );
-                // معالجة الصورة هنا
-              },
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.black,
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: profileImageUrl.isNotEmpty
-                          ? NetworkImage(profileImageUrl)
-                          : const AssetImage('assets/Photo/me.jpg')
-                              as ImageProvider,
-                    ),
-                    Positioned(
-                      bottom: -0.3,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                            )
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Color(0xFF2e495e),
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            currentAccountPicture: _buildProfileImage(userController),
             decoration: BoxDecoration(
-              color: Color(0xFF2e495e),
+              color: const Color(0xFF2e495e),
               image: const DecorationImage(
                 image: AssetImage('assets/drawer_bg.png'),
                 fit: BoxFit.cover,
                 opacity: 0.1,
               ),
             ),
-          ),
-          // List Items
+          )),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
                 _buildDrawerItem(
-                  context,
                   icon: Icons.access_alarm,
                   title: 'Reminders',
-                  route: () => Get.to(Reminders()),
+                  route: () => Get.to( Reminders()),
                 ),
                 _buildDrawerItem(
-                  context,
                   icon: Icons.flag,
                   title: 'Goals',
                   route: () => Get.toNamed("/Goals"),
                 ),
                 _buildDrawerItem(
-                  context,
                   icon: Icons.attach_money,
                   title: 'Incomes',
                   route: () => Get.toNamed("/IncomesScreens"),
                 ),
                 _buildDrawerItem(
-                  context,
                   icon: Icons.money_off,
                   title: 'Expenses',
                   route: () => Get.toNamed("/ExpencesScreens"),
                 ),
                 _buildDrawerItem(
-                  context,
                   icon: Icons.settings,
                   title: 'Settings',
                   route: () => Get.toNamed("/Setting"),
                 ),
                 const Divider(height: 20),
                 _buildDrawerItem(
-                  context,
                   icon: Icons.logout,
                   title: 'Log Out',
                   color: Colors.red,
@@ -147,8 +84,68 @@ class DrawerClass extends StatelessWidget {
     );
   }
 
-  Widget _buildDrawerItem(
-    BuildContext context, {
+  Widget _buildProfileImage(UserController userController) {
+    return GestureDetector(
+      onTap: () async => await _handleImageUpdate(userController),
+      child: CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: _getProfileImage(userController),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                    )
+                  ],
+                ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Color(0xFF2e495e),
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ImageProvider _getProfileImage(UserController userController) {
+    if (userController.user.value?.profileImageUrl?.isNotEmpty == true) {
+      return NetworkImage(userController.user.value!.profileImageUrl!);
+    }
+    return const AssetImage('assets/Photo/me.jpg');
+  }
+
+  Future<void> _handleImageUpdate(UserController userController) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image != null) {
+      // هنا يمكنك إضافة منطق رفع الصورة إلى السيرفر
+      userController.updateProfileImage(image.path);
+    }
+  }
+
+  Widget _buildDrawerItem({
     required IconData icon,
     required String title,
     required Function() route,
@@ -158,8 +155,7 @@ class DrawerClass extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: color?.withOpacity(0.1) ??
-              const Color(0xFF2e495e).withOpacity(0.1),
+          color: color?.withOpacity(0.1) ?? const Color(0xFF2e495e).withOpacity(0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: color ?? const Color(0xFF2e495e)),
@@ -192,7 +188,7 @@ class DrawerClass extends StatelessWidget {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await logoutUser();
+              await _performLogout();
             },
             child: const Text(
               'Log Out',
@@ -204,14 +200,19 @@ class DrawerClass extends StatelessWidget {
     );
   }
 
-  Future<void> logoutUser() async {
+  Future<void> _performLogout() async {
     try {
       await FirebaseAuth.instance.signOut();
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('isLoggedIn');
+      Get.find<UserController>().clearUserData();
       Get.offAllNamed('/login');
     } catch (e) {
-      Get.snackbar('Error', 'Logout failed: ${e.toString()}');
+      Get.snackbar(
+        'Error',
+        'Logout failed: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }

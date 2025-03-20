@@ -14,11 +14,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      drawer: DrawerClass(
-        accountName: '',
-        accountEmail: '',
-        profileImageUrl: '',
-      ),
+      drawer: CustomDrawer(),
       body: Obx(() {
         return controller.isLoading.value
             ? Center(child: CircularProgressIndicator())

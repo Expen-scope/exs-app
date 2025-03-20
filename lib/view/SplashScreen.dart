@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controller/user_controller.dart';
 
 class MyCustomSplashScreen extends StatefulWidget {
   @override
@@ -19,6 +20,7 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
   @override
   void initState() {
     super.initState();
+
     _controller =
         AnimationController(vsync: this, duration: Duration(seconds: 3));
     animation1 = Tween<double>(begin: 40, end: 20).animate(
@@ -32,9 +34,7 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
     _controller.forward();
 
     Timer(Duration(seconds: 2), () {
-      setState(() {
-        _fontSize = 1.06;
-      });
+      setState(() => _fontSize = 1.06);
     });
 
     Timer(Duration(seconds: 2), () {
@@ -44,8 +44,19 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
       });
     });
 
-    Timer(Duration(seconds: 4), () {
-      Get.offNamed("/Login");
+    Future.delayed(Duration(seconds: 3), () async {
+      final userController = Get.find<UserController>();
+
+      try {
+        await userController.initializeUser();
+        if (userController.isLoggedIn.value) {
+          Get.offAllNamed('/HomePage');
+        } else {
+          Get.offAllNamed('/Login');
+        }
+      } catch (e) {
+        Get.offAllNamed('/Login');
+      }
     });
   }
 

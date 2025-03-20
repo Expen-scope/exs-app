@@ -11,11 +11,7 @@ class Setting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerClass(
-        accountName: 'ss',
-        accountEmail: '',
-        profileImageUrl: '',
-      ),
+      drawer: CustomDrawer(),
       appBar: Appbarofpage(TextPage: "Setting"),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(hight(context) * 0.03),
