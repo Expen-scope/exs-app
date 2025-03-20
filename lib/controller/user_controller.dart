@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/User.dart';
 import 'dart:convert';
@@ -7,7 +10,7 @@ class UserController extends GetxController {
   final RxBool isLoggedIn = false.obs;
   final Rx<UserModel?> user = Rx<UserModel?>(null);
   final RxBool isLoading = true.obs;
-
+  var selectedImage = Rx<File?>(null);
   late SharedPreferences _prefs;
 
   @override
@@ -18,6 +21,15 @@ class UserController extends GetxController {
 
   Future<void> _initPrefs() async {
     _prefs = await SharedPreferences.getInstance();
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = File(image.path);
+      await _saveToPrefs();
+    }
   }
 
   Future<void> loadUserData() async {
@@ -78,11 +90,12 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> updateProfileImage(String imageUrl) async {
+  Future<void> updateProfileImage(String imagePath) async {
     try {
       if (user.value != null) {
-        user.value = user.value!.copyWith(profileImageUrl: imageUrl);
+        selectedImage.value = File(imagePath);
         await _saveToPrefs();
+        update();
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to update profile: $e');

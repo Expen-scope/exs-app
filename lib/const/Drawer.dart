@@ -5,9 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controller/user_controller.dart';
 import '../view/ReminderPage.dart';
+import 'Constants.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  final UserController controller = Get.put(UserController());
+  CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,29 +19,30 @@ class CustomDrawer extends StatelessWidget {
       child: Column(
         children: [
           Obx(() => UserAccountsDrawerHeader(
-            accountName: Text(
-              userController.user.value?.name ?? 'Guest',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            accountEmail: Text(
-              userController.user.value?.email ?? 'No email',
-              style: const TextStyle(
-                fontSize: 14,
-              ),
-            ),
-            currentAccountPicture: _buildProfileImage(userController),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2e495e),
-              image: const DecorationImage(
-                image: AssetImage('assets/drawer_bg.png'),
-                fit: BoxFit.cover,
-                opacity: 0.1,
-              ),
-            ),
-          )),
+                accountName: Text(
+                  userController.user.value?.name ?? 'Guest',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                accountEmail: Text(
+                  userController.user.value?.email ?? 'No email',
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+                currentAccountPicture: CircleAvatar(
+                  radius: width(context) * 0.16,
+                  backgroundImage: controller.selectedImage.value != null
+                      ? FileImage(controller.selectedImage.value!)
+                          as ImageProvider
+                      : const AssetImage('assets/Photo/me.jpg'),
+                ),
+                decoration: BoxDecoration(
+                  color: Color(0xFF2e495e),
+                ),
+              )),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -47,7 +50,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.access_alarm,
                   title: 'Reminders',
-                  route: () => Get.to( Reminders()),
+                  route: () => Get.to(Reminders()),
                 ),
                 _buildDrawerItem(
                   icon: Icons.flag,
@@ -127,7 +130,9 @@ class CustomDrawer extends StatelessWidget {
 
   ImageProvider _getProfileImage(UserController userController) {
     if (userController.user.value?.profileImageUrl?.isNotEmpty == true) {
-      return NetworkImage(userController.user.value!.profileImageUrl!);
+      return controller.selectedImage.value != null
+          ? FileImage(controller.selectedImage.value!) as ImageProvider
+          : const AssetImage('assets/Photo/me.jpg');
     }
     return const AssetImage('assets/Photo/me.jpg');
   }
@@ -138,9 +143,7 @@ class CustomDrawer extends StatelessWidget {
       source: ImageSource.gallery,
       imageQuality: 85,
     );
-
     if (image != null) {
-      // هنا يمكنك إضافة منطق رفع الصورة إلى السيرفر
       userController.updateProfileImage(image.path);
     }
   }
@@ -155,7 +158,8 @@ class CustomDrawer extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: color?.withOpacity(0.1) ?? const Color(0xFF2e495e).withOpacity(0.1),
+          color: color?.withOpacity(0.1) ??
+              const Color(0xFF2e495e).withOpacity(0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: color ?? const Color(0xFF2e495e)),

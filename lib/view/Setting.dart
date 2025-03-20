@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../const/AppBarC.dart';
 import '../const/Constants.dart';
-import '../const/Drawer.dart'; // تأكد من إضافة الحزمة
+import '../const/Drawer.dart';
+import '../controller/user_controller.dart';
 
 class Setting extends StatelessWidget {
-  const Setting({super.key});
+  final UserController controller = Get.put(UserController());
+
+  Setting({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +26,7 @@ class Setting extends StatelessWidget {
               child: Column(
                 children: [
                   GestureDetector(
-                    onTap: () async {
-                      // إضافة منطق اختيار الصورة
-                      final ImagePicker picker = ImagePicker();
-                      final XFile? image =
-                          await picker.pickImage(source: ImageSource.gallery);
-                      // معالجة الصورة المختارة هنا
-                    },
+                    onTap: controller.pickImage,
                     child: Container(
                       width: width(context) * 0.35,
                       height: width(context) * 0.35,
@@ -42,11 +40,15 @@ class Setting extends StatelessWidget {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          CircleAvatar(
-                            radius: width(context) * 0.16,
-                            backgroundImage: AssetImage(
-                                'assets/Photo/me.jpg'), // استبدل بالصورة المختارة
-                          ),
+                          Obx(() => CircleAvatar(
+                                radius: width(context) * 0.16,
+                                backgroundImage: controller
+                                            .selectedImage.value !=
+                                        null
+                                    ? FileImage(controller.selectedImage.value!)
+                                        as ImageProvider
+                                    : const AssetImage('assets/Photo/me.jpg'),
+                              )),
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -63,7 +65,7 @@ class Setting extends StatelessWidget {
                                   )
                                 ],
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.camera_alt,
                                 color: Color(0xFF507da0),
                                 size: 28,
@@ -75,13 +77,33 @@ class Setting extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: hight(context) * 0.02),
-                  Text(
-                    'Change your photo',
-                    style: TextStyle(
-                      color: Color(0xFF507da0),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  Obx(() {
+                    return controller.selectedImage.value != null
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(width(context) * 0.2, 50),
+                              backgroundColor: Color(0xFF507da0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5,
+                            ),
+                            onPressed: () async {
+                              await controller.updateProfileImage(
+                                  controller.selectedImage.value!.path);
+                              Get.snackbar('Success',
+                                  'Profile image updated successfully');
+                            },
+                            child: Text(
+                              'Change your photo',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          )
+                        : SizedBox.shrink();
+                  }),
                 ],
               ),
             ),
