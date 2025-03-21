@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +21,7 @@ class UserController extends GetxController {
 
   Future<void> _initPrefs() async {
     _prefs = await SharedPreferences.getInstance();
+    await initializeUser();
   }
 
   Future<void> pickImage() async {
@@ -38,11 +38,10 @@ class UserController extends GetxController {
       isLoading.value = true;
       String? userData = _prefs.getString('user_data');
       String? token = _prefs.getString('auth_token');
-
       if (userData != null && token != null) {
         user.value = UserModel.fromJson(json.decode(userData));
         isLoggedIn.value = true;
-        print('User data loaded: ${user.value?.name}'); // log
+        print('User data loaded: ${user.value?.name}');
       }
     } catch (e) {
       print('Error loading user data: $e');
@@ -51,20 +50,20 @@ class UserController extends GetxController {
     }
   }
 
-
   Future<void> initializeUser() async {
     try {
       isLoading.value = true;
       bool rememberMe = _prefs.getBool('remember_me') ?? false;
-
       if (rememberMe) {
         await loadUserData();
-
         if (isLoggedIn.value) {
           bool isValid = await _verifyTokenWithServer();
           if (!isValid) {
             await clearUserData();
             isLoggedIn.value = false;
+          } else {
+            // إذا كان التوكن صالحًا، يظل المستخدم مسجل الدخول
+            Get.offAllNamed('/HomePage');
           }
         }
       }
@@ -80,9 +79,11 @@ class UserController extends GetxController {
     try {
       final response = await Dio().get(
         'http://10.0.2.2:8000/api/verify-token',
-        options: Options(headers: {
-          'Authorization': 'Bearer ${_prefs.getString('auth_token')}'
-        }),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${_prefs.getString('auth_token')}',
+          },
+        ),
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -92,6 +93,7 @@ class UserController extends GetxController {
 
   Future<void> clearUserData() async {
     try {
+      await _prefs.remove('auth_token');
       await _prefs.remove('user_data');
       await _prefs.remove('remember_me');
       user.value = null;
@@ -120,6 +122,31 @@ class UserController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to save data: $e');
+    }
+  }
+
+  Future<void> login(String email, String password) async {
+    try {
+      final response = await Dio().post(
+        'http://10.0.2.2:8000/api/login',
+        data: {'email': email, 'password': password},
+      );
+
+      if (response.statusCode == 200) {
+        // حفظ التوكن
+        String token = response.data['token'];
+        await _prefs.setString('auth_token', token);
+        await _prefs.setBool('remember_me', true);
+
+        // حفظ بيانات المستخدم
+        user.value = UserModel.fromJson(response.data['user']);
+        await _prefs.setString('user_data', json.encode(user.value!.toJson()));
+
+        isLoggedIn.value = true;
+        Get.offAllNamed('/HomePage');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Login failed: $e');
     }
   }
 }

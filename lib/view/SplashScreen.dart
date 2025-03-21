@@ -8,8 +8,7 @@ class MyCustomSplashScreen extends StatefulWidget {
   _MyCustomSplashScreenState createState() => _MyCustomSplashScreenState();
 }
 
-class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
-    with TickerProviderStateMixin {
+class _MyCustomSplashScreenState extends State<MyCustomSplashScreen> with TickerProviderStateMixin {
   double _fontSize = 2;
   double _containerSize = 1.5;
   double _textOpacity = 0.0;
@@ -20,17 +19,15 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
   @override
   void initState() {
     super.initState();
-
-    _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 3));
+    _controller = AnimationController(vsync: this, duration: Duration(seconds: 3));
     animation1 = Tween<double>(begin: 40, end: 20).animate(
-      CurvedAnimation(
-          parent: _controller, curve: Curves.fastLinearToSlowEaseIn),
+      CurvedAnimation(parent: _controller, curve: Curves.fastLinearToSlowEaseIn),
     )..addListener(() {
-        setState(() {
-          _textOpacity = 1.0;
-        });
+      setState(() {
+        _textOpacity = 1.0;
       });
+    });
+
     _controller.forward();
 
     Timer(Duration(seconds: 2), () {
@@ -46,7 +43,6 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
 
     Future.delayed(Duration(seconds: 3), () async {
       final userController = Get.find<UserController>();
-
       try {
         await userController.initializeUser();
         if (userController.isLoggedIn.value) {
@@ -70,7 +66,6 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Color(0xFF2e495e),
       body: Stack(

@@ -18,6 +18,7 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
   final ReminderController reminderController = Get.find();
   late TextEditingController nameController;
   late TextEditingController amountController;
+  late TextEditingController collectedController;
   late TextEditingController priceController;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -29,6 +30,9 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
     priceController = TextEditingController(text: widget.reminder.price.toString());
     selectedDate = widget.reminder.time;
     selectedTime = TimeOfDay.fromDateTime(widget.reminder.time);
+    collectedController = TextEditingController(
+        text: widget.reminder.collectedoprice.toString()
+    );
   }
 
   Future<void> updateReminder() async {
@@ -52,6 +56,7 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
       id: widget.reminder.id,
       name: nameController.text,
       price: double.parse(priceController.text),
+      collectedoprice: double.parse(collectedController.text),
       time: finalDateTime,
     );
 
@@ -99,6 +104,12 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
               controller: amountController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: "Amount"),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: collectedController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: "المبلغ المحصل"),
             ),
             const SizedBox(height: 20),
             Row(

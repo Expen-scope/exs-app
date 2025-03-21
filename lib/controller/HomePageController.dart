@@ -21,7 +21,7 @@ class TransactionController extends GetxController {
   // حساب إجمالي المداخيل والمصاريف والرصيد
   void calculateAnalytics() {
     totalIncome.value =
-        incomesController.incomes.fold(0.0, (sum, item) => sum + item.value);
+        incomesController.incomes.fold(0.0, (sum, item) => sum + item.price);
     totalExpenses.value = expensesController.listExpenses
         .fold(0.0, (sum, item) => sum + item.value);
     balance.value = totalIncome.value - totalExpenses.value;

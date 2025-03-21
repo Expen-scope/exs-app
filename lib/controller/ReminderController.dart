@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import '../model/Reminder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ class ReminderController extends GetxController {
   Future<void> _loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('auth_token');
+    print('Auth Token: $authToken');
     fetchReminders();
   }
 
@@ -51,8 +53,9 @@ class ReminderController extends GetxController {
         headers: _headers,
         body: json.encode({
           'name': reminder.name,
-          'time': reminder.time,
+          'time': DateFormat('yyyy-MM-dd HH:mm:ss').format(reminder.time),
           'price': reminder.price,
+          'collectedoprice': reminder.collectedoprice,
         }),
       );
 
@@ -92,8 +95,9 @@ class ReminderController extends GetxController {
         headers: _headers,
         body: json.encode({
           'name': reminder.name,
-          'time': reminder.time,
+          'time': DateFormat('yyyy-MM-dd HH:mm:ss').format(reminder.time),
           'price': reminder.price,
+          'collectedoprice': reminder.collectedoprice,
         }),
       );
 

@@ -1,88 +1,125 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../model/Incomes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' as Dio;
-import 'package:get/get_connect/http/src/response/response.dart' as getResponse;
+import '../model/Incomes.dart';
 
 class IncomesController extends GetxController {
   var incomes = <Income>[].obs;
   var isLoading = false.obs;
-  var selectedType = "Salaries and Wages".obs;
   final Dio.Dio dio = Dio.Dio();
-  final String apiUrl = 'http://10.0.2.2:8000/api/';
+  final String apiUrl = 'http://10.0.2.2:8000/api';
 
-  void addFakeData() {
-    incomes.addAll([
-      Income(value: 1500, type: "Salary"),
-      Income(value: 500, type: "Freelance"),
-      Income(value: 300, type: "Investment"),
-      Income(value: 700, type: "Business"),
-      Income(value: 100, type: "Others"),
-      Income(value: 1500, type: "Freelance"),
-      Income(value: 1721.75, type: "Investment"),
-    ]);
-  }
-
-  final Map<String, IncomeInfo> incomeListDATA = {
-    "Salary":
-        IncomeInfo(color: Colors.green, icon: Icon(Icons.monetization_on)),
-    "Freelance": IncomeInfo(color: Colors.blue, icon: Icon(Icons.work)),
-    "Investment":
+  RxString selectedCategory = ''.obs;
+  final incomeCategories = ['salary', 'bonus', 'investment'].obs;
+  final incomeCategoriesData = {
+    'salary': IncomeInfo(color: Colors.blue, icon: Icon(Icons.work)),
+    'bonus': IncomeInfo(color: Colors.green, icon: Icon(Icons.code)),
+    'investment':
         IncomeInfo(color: Colors.orange, icon: Icon(Icons.trending_up)),
-  };
-  var incomeTypes =
-      ["Salary", "Freelance", "Business", "Investments", "Others"].obs;
-
-  var selectedIncomeType = "Salary".obs;
+  }.obs;
 
   @override
   void onInit() {
+    selectedCategory.value = incomeCategories.first;
     fetchIncomes();
     super.onInit();
-    addFakeData();
   }
 
   Future<void> fetchIncomes() async {
     try {
       isLoading.value = true;
-      Dio.Response response = await dio.get(apiUrl);
-      if (response.statusCode == 200) {
-        incomes.value = (response.data as List)
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+      if (token == null) {
+        Get.snackbar('Error', 'No token found');
+        return;
+      }
+
+      Dio.Response response = await dio.get(
+        '$apiUrl/incomes',
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        incomes.value = (response.data['data'] as List)
             .map((json) => Income.fromJson(json))
             .toList();
-      } else {}
+      } else {
+        Get.snackbar('Error', 'Failed to load data');
+      }
     } catch (e) {
-      print('Error fetching incomes: $e');
+      Get.snackbar('Error', 'Error fetching incomes: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> addIncome(double value, String type) async {
+  Future<void> addIncome(
+    double price,
+    String category,
+    String nameOfExpense,
+    DateTime time,
+  ) async {
     try {
-      Income newIncome = Income(value: value, type: type); // إنشاء دخل جديد.
-      Dio.Response response = await dio.post(apiUrl,
-          data: newIncome.toJson()); // إرسال طلب POST لإضافة الدخل.
-      if (response.statusCode == 200) {
-        incomes.add(Income.fromJson(response.data)); // إضافة الدخل إلى القائمة.
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+      String? userId = prefs.getString('user_id');
+
+      if (token == null || userId == null) {
+        Get.snackbar('Error', 'Authentication required');
+        return;
+      }
+
+      Income newIncome = Income(
+        id: 'temp_id',
+        price: price,
+        category: category,
+        nameOfExpense: nameOfExpense,
+        time: time,
+        userId: userId,
+      );
+
+      Dio.Response response = await dio.post(
+        '$apiUrl/incomes',
+        data: newIncome.toJson(),
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 201) {
+        incomes.add(Income.fromJson(response.data['data']));
+        Get.snackbar('Success', 'Income added');
+      } else {
+        Get.snackbar('Error', 'Failed to add income');
       }
     } catch (e) {
-      print('Error adding income: $e'); // في حالة حدوث خطأ.
+      Get.snackbar('Error', 'Error adding income: $e');
     }
   }
 
-  /// 🔹 **حذف دخل معين**
-  Future<void> removeIncome(int index, int id) async {
+  Future<void> deleteIncome(String id) async {
     try {
-      Dio.Response response =
-          await dio.delete('$apiUrl/$id'); // إرسال طلب DELETE لحذف الدخل.
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+
+      if (token == null) {
+        Get.snackbar('Error', 'Authentication required');
+        return;
+      }
+
+      Dio.Response response = await dio.delete(
+        '$apiUrl/incomes/$id',
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
       if (response.statusCode == 200) {
-        incomes.removeAt(index); // إزالة الدخل من القائمة.
+        incomes.removeWhere((income) => income.id == id);
+        Get.snackbar('Success', 'Income deleted');
+      } else {
+        Get.snackbar('Error', 'Failed to delete income');
       }
     } catch (e) {
-      print('Error removing income: $e'); // في حالة حدوث خطأ.
+      Get.snackbar('Error', 'Error deleting income: $e');
     }
   }
 }
@@ -90,6 +127,5 @@ class IncomesController extends GetxController {
 class IncomeInfo {
   final Color color;
   final Icon icon;
-
   IncomeInfo({required this.color, required this.icon});
 }

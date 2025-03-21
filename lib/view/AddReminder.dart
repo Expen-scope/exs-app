@@ -15,12 +15,14 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   final ReminderController reminderController = Get.find();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
+  final TextEditingController collectedController = TextEditingController();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
   Future<void> saveReminder() async {
     if (nameController.text.isEmpty ||
         priceController.text.isEmpty ||
+        collectedController.text.isEmpty ||
         selectedDate == null ||
         selectedTime == null) {
       Get.snackbar("خطأ", "يرجى ملء جميع الحقول");
@@ -29,8 +31,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
     try {
       double.parse(priceController.text);
+      double.parse(collectedController.text);
     } catch (e) {
-      Get.snackbar("خطأ", "المبلغ يجب أن يكون رقمًا صحيحًا");
+      Get.snackbar("خطأ", "المبالغ يجب أن تكون أرقامًا صحيحة");
       return;
     }
 
@@ -45,6 +48,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     ReminderModel newReminder = ReminderModel(
       name: nameController.text,
       price: double.parse(priceController.text),
+      collectedoprice: double.parse(collectedController.text),
       time: finalDateTime,
       id: null,
     );
@@ -107,6 +111,20 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Amount",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: hight(context) * .03),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
+              child: TextField(
+                controller: collectedController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "المبلغ المحصل",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

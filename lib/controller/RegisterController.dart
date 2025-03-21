@@ -4,7 +4,6 @@ import 'package:dio/dio.dart' as Dio;
 import '../model/User.dart';
 
 class RegisterController extends GetxController {
-  // متغيرات المراقبة
   var name = ''.obs;
   var email = ''.obs;
   var password = ''.obs;
