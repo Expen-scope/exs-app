@@ -6,10 +6,8 @@ import '../model/Goal.dart';
 
 class EditGoalScreen extends StatefulWidget {
   final GoalModel goal;
-  final int goalIndex;
 
-  const EditGoalScreen({Key? key, required this.goal, required this.goalIndex})
-      : super(key: key);
+  const EditGoalScreen({Key? key, required this.goal}) : super(key: key);
 
   @override
   _EditGoalScreenState createState() => _EditGoalScreenState();
@@ -17,26 +15,26 @@ class EditGoalScreen extends StatefulWidget {
 
 class _EditGoalScreenState extends State<EditGoalScreen> {
   final GoalController goalController = Get.find();
-  final TextEditingController savedAmountController = TextEditingController();
+  final TextEditingController collectedController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    savedAmountController.text = widget.goal.savedAmount.toString();
+    collectedController.text = widget.goal.collectedmoney!.toStringAsFixed(2);
   }
 
   void updateGoal() {
-    double savedAmount =
-        double.tryParse(savedAmountController.text) ?? widget.goal.savedAmount;
-    GoalModel updatedGoal = widget.goal.copyWith(savedAmount: savedAmount);
+    double? collected =
+        double.tryParse(collectedController.text) ?? widget.goal.collectedmoney;
+    GoalModel updatedGoal = widget.goal.copyWith(collectedmoney: collected);
     goalController.updateGoal(widget.goal.id, updatedGoal);
-    Get.back(); // الرجوع للشاشة السابقة
+    Get.back();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Appbarofpage(TextPage: "Edit Goal"),
+      appBar: Appbarofpage(TextPage: "Edit"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -44,15 +42,28 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
             Text("Goal: ${widget.goal.name}",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             TextField(
-              controller: savedAmountController,
-              decoration: const InputDecoration(labelText: "Saved Amount"),
+              controller: collectedController,
+              decoration: const InputDecoration(
+                labelText: "Saved Amount",
+                border: OutlineInputBorder(),
+              ),
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: updateGoal, child: const Text("Update Goal")),
+              onPressed: updateGoal,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF507da0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              ),
+              child: const Text(
+                "Update Goal",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),

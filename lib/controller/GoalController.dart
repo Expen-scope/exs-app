@@ -1,128 +1,142 @@
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+
 import '../model/Goal.dart';
 
 class GoalController extends GetxController {
-  var goals = <GoalModel>[].obs;
-  final String apiUrl = "http://10.0.2.2:8000/api/";
-  final String token =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Fiby1uYWppYi50ZXN0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzQxNzc2MzgzLCJleHAiOjE3NDE3Nzk5ODMsIm5iZiI6MTc0MTc3NjM4MywianRpIjoia1QyQXc3QnY0b016ZVFBdCIsInN1YiI6IjQiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.N8eolIisMFbUcQTLqdQtlEa8GNF2ylH29I69hljgeAU";
-  var isLoading = false.obs;
+  final RxList<GoalModel> goals = <GoalModel>[].obs;
+  final String _apiUrl = "https://abo-najib.test/api/";
+  final RxBool isLoading = false.obs;
+
+  String get _token => "YOUR_TOKEN_HERE";
 
   @override
   void onInit() {
     fetchGoals();
-    goals.addAll([
-      GoalModel(
-          name: "رحلة إلى سويسرا",
-          savedAmount: 500,
-          totalAmount: 2000,
-          type: "سفر",
-          id: 1,
-          startDate: DateTime.now()),
-      GoalModel(
-          name: "شراء لابتوب",
-          savedAmount: 800,
-          totalAmount: 1500,
-          type: "إلكترونيات",
-          id: 2,
-          startDate: DateTime.now()),
-      GoalModel(
-          name: "دراجة هوائية",
-          savedAmount: 300,
-          totalAmount: 1000,
-          type: "رياضة",
-          id: 3,
-          startDate: DateTime.now()),
-    ]);
     super.onInit();
   }
 
-  // جلب الأهداف
   Future<void> fetchGoals() async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      final response = await http.get(Uri.parse("$apiUrl/goal"));
+      final response = await http.get(
+        Uri.parse("${_apiUrl}goal"),
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
       if (response.statusCode == 200) {
-        var data = json.decode(response.body) as List;
-        goals.value = data.map((e) => GoalModel.fromJson(e)).toList();
+        final responseData = jsonDecode(response.body);
+
+        // تحقق من الهيكل الحقيقي للاستجابة
+        final data = responseData['data'] as List;
+
+        goals.assignAll(data.map((e) => GoalModel.fromJson(e)));
       } else {
-        Get.snackbar("خطأ", "فشل في جلب الأهداف");
+        Get.snackbar('Error', 'Failed to load goals: ${response.body}');
       }
     } catch (e) {
-      Get.snackbar("خطأ", "حدث خطأ أثناء الاتصال بالسيرفر");
+      Get.snackbar('Error', 'Connection Error: $e');
+      print('Error details: $e');
     } finally {
       isLoading.value = false;
     }
   }
+  // Future<void> fetchGoals() async {
+  //   isLoading.value = true;
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse("${_apiUrl}goal"),
+  //       headers: {'Authorization': 'Bearer $_token'},
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body)['data'] as List;
+  //       goals.assignAll(data.map((e) => GoalModel.fromJson(e)));
+  //     } else {
+  //       Get.snackbar('Error', 'Failed to load goals: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Connection Error: $e');
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<void> addGoal(GoalModel goal) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
       final response = await http.post(
-        Uri.parse("$apiUrl/addgoal"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "name": goal.name,
-          "time": goal.deadline?.toIso8601String() ?? '',
-          "price": goal.totalAmount,
-          "category": goal.type,
-          "token": token,
+        Uri.parse("${_apiUrl}addgoal"),
+        headers: {
+          'Authorization': 'Bearer $_token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'name': goal.name,
+          'time': goal.time.toIso8601String(),
+          'price': goal.price,
+          'category': goal.category,
+          'collectedmoney': goal.collectedmoney,
         }),
       );
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        fetchGoals(); // تحديث القائمة بعد الإضافة
+      if (response.statusCode == 201) {
+        await fetchGoals();
+        Get.back();
       } else {
-        // طباعة تفاصيل الخطأ من الخادم
-        print('Failed to add goal. Response: ${response.body}');
-        Get.snackbar("خطأ", "لم يتم إضافة الهدف: ${response.body}");
+        Get.snackbar('Error', 'Add failed: ${response.body}');
       }
     } catch (e) {
-      // طباعة الخطأ الكامل في حال حدوث استثناء
-      print('Error occurred while adding goal: $e');
-      Get.snackbar("خطأ", "حدث خطأ أثناء إضافة الهدف: $e");
+      Get.snackbar('Error', 'Add Error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // تحديث هدف
   Future<void> updateGoal(int id, GoalModel goal) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
       final response = await http.put(
-        Uri.parse("$apiUrl/updategoal/$id"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(goal.toJson()),
+        Uri.parse("${_apiUrl}updategoal/$id"),
+        headers: {
+          'Authorization': 'Bearer $_token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(goal.toJson()),
       );
 
       if (response.statusCode == 200) {
-        fetchGoals(); // تحديث القائمة بعد التعديل
+        await fetchGoals();
+        Get.back();
       } else {
-        Get.snackbar("خطأ", "فشل في تحديث الهدف");
+        Get.snackbar('Error', 'Update failed: ${response.body}');
       }
     } catch (e) {
-      Get.snackbar("خطأ", "حدث خطأ أثناء تحديث الهدف");
+      Get.snackbar('Error', 'Update Error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // حذف هدف
   Future<void> deleteGoal(int id) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      final response = await http.delete(Uri.parse("$apiUrl/deletegoal/$id"));
+      final response = await http.delete(
+        Uri.parse("${_apiUrl}deletegoal/$id"),
+        headers: {'Authorization': 'Bearer $_token'},
+      );
 
       if (response.statusCode == 200) {
-        fetchGoals(); // تحديث القائمة بعد الحذف
+        await fetchGoals();
       } else {
-        Get.snackbar("خطأ", "فشل في حذف الهدف");
+        Get.snackbar('Error', 'Delete failed: ${response.body}');
       }
     } catch (e) {
-      Get.snackbar("خطأ", "حدث خطأ أثناء حذف الهدف");
+      Get.snackbar('Error', 'Delete Error: $e');
     } finally {
       isLoading.value = false;
     }

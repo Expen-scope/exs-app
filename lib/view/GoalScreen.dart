@@ -1,10 +1,10 @@
+import 'package:abo_najib_2/const/AppBarC.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../const/AppBarC.dart';
 import '../controller/GoalController.dart';
 import '../model/Goal.dart';
 import 'EditGoalScreen.dart';
-import 'AddGoalScreen.dart'; // تأكد من استيراد AddGoalScreen
+import 'AddGoalScreen.dart';
 
 class GoalsScreen extends StatelessWidget {
   final GoalController goalController = Get.put(GoalController());
@@ -41,7 +41,7 @@ class GoalsScreen extends StatelessWidget {
           itemCount: goalController.goals.length,
           itemBuilder: (context, index) {
             GoalModel goal = goalController.goals[index];
-            double progress = goal.savedAmount / goal.totalAmount;
+            double progress = goal.collectedmoney / goal.price;
 
             return Card(
               key: ValueKey(goal.id),
@@ -79,7 +79,7 @@ class GoalsScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${goal.savedAmount.toStringAsFixed(0)} / ${goal.totalAmount.toStringAsFixed(0)} SAR",
+                          "${goal.collectedmoney.toStringAsFixed(0)} / ${goal.price.toStringAsFixed(0)} SAR",
                           style: TextStyle(
                             color: Colors.grey[800],
                             fontSize: 14,
@@ -96,12 +96,27 @@ class GoalsScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Category: ${goal.category}",
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      "Deadline: ${goal.time.toLocal().toString().split(' ')[0]}",
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit, color: Color(0xFF264653)),
                   onPressed: () {
-                    Get.to(() => EditGoalScreen(goal: goal, goalIndex: index));
+                    Get.to(() => EditGoalScreen(goal: goal));
                   },
                 ),
               ),
@@ -111,8 +126,8 @@ class GoalsScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.to(() => AddGoalScreen()),
-        backgroundColor: Color(0xFF507da0),
-        child: Icon(Icons.add, color: Colors.white, size: 28),
+        backgroundColor: const Color(0xFF507da0),
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }

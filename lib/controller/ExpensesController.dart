@@ -6,7 +6,7 @@ import '../model/Expenses.dart';
 import 'package:flutter/material.dart';
 
 class ExpencesController extends GetxController {
-  var listExpenses = <Expense>[].obs; // قائمة المصروفات باستخدام الموديل
+  var listExpenses = <Expense>[].obs;
 
   final Map<String, ExpenseInfo> expenseData = {
     "Food & Drinks": ExpenseInfo(
@@ -64,8 +64,7 @@ class ExpencesController extends GetxController {
 
     // جلب البيانات من API في الوضع العادي
     try {
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:8000/api/'));
+      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/'));
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         listExpenses.value = List<Expense>.from(

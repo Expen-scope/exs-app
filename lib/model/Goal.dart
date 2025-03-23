@@ -1,65 +1,59 @@
 class GoalModel {
   final int id;
   String name;
-  double totalAmount;
-  double savedAmount;
-  String type;
-  DateTime startDate;
-  DateTime? deadline;
+  double price;
+  double collectedmoney; // غير nullable الآن
+  String category;
+  DateTime time;
+  DateTime createdAt;
 
   GoalModel({
     required this.id,
     required this.name,
-    required this.totalAmount,
-    required this.savedAmount,
-    required this.type,
-    required this.startDate,
-    this.deadline,
+    required this.price,
+    required this.collectedmoney, // مطلوب الآن
+    required this.category,
+    required this.time,
+    required this.createdAt,
   });
 
   factory GoalModel.fromJson(Map<String, dynamic> json) {
     return GoalModel(
-      id: json['id'],
-      name: json['name'],
-      totalAmount: (json['totalAmount'] as num).toDouble(),
-      savedAmount: (json['savedAmount'] as num).toDouble(),
-      type: json['type'],
-      startDate: DateTime.parse(json['startDate']),
-      deadline:
-          json['deadline'] != null ? DateTime.parse(json['deadline']) : null,
+      id: json['id'] as int,
+      name: json['name'] as String,
+      price: (json['price'] as num).toDouble(),
+      collectedmoney: (json['collectedmoney'] as num?)?.toDouble() ?? 0.0,
+      category: json['category'] as String,
+      time: DateTime.parse(json['time'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'price': price,
+        'collectedmoney': collectedmoney,
+        'category': category,
+        'time': time.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+      };
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      "name": name,
-      "totalAmount": totalAmount,
-      "savedAmount": savedAmount,
-      "type": type,
-      "startDate": startDate.toIso8601String(),
-      "deadline": deadline?.toIso8601String(),
-    };
-  }
-
-  // إضافة copyWith لتحديث البيانات بسهولة
   GoalModel copyWith({
     int? id,
     String? name,
-    double? totalAmount,
-    double? savedAmount,
-    String? type,
-    DateTime? startDate,
-    DateTime? deadline,
-  }) {
-    return GoalModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      totalAmount: totalAmount ?? this.totalAmount,
-      savedAmount: savedAmount ?? this.savedAmount,
-      type: type ?? this.type,
-      startDate: startDate ?? this.startDate,
-      deadline: deadline ?? this.deadline,
-    );
-  }
+    double? price,
+    double? collectedmoney,
+    String? category,
+    DateTime? time,
+    DateTime? createdAt,
+  }) =>
+      GoalModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        price: price ?? this.price,
+        collectedmoney: collectedmoney ?? this.collectedmoney,
+        category: category ?? this.category,
+        time: time ?? this.time,
+        createdAt: createdAt ?? this.createdAt,
+      );
 }

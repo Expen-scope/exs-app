@@ -95,7 +95,7 @@ class IncomesScreens extends StatelessWidget {
                       color: const Color(0xFF264653)),
                 ),
                 title: Text(
-                  income.nameOfExpense,
+                  income.nameOfIncome,
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

@@ -27,12 +27,12 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.reminder.name);
-    priceController = TextEditingController(text: widget.reminder.price.toString());
+    priceController =
+        TextEditingController(text: widget.reminder.price.toString());
     selectedDate = widget.reminder.time;
     selectedTime = TimeOfDay.fromDateTime(widget.reminder.time);
-    collectedController = TextEditingController(
-        text: widget.reminder.collectedoprice.toString()
-    );
+    collectedController =
+        TextEditingController(text: widget.reminder.collectedoprice.toString());
   }
 
   Future<void> updateReminder() async {
@@ -65,6 +65,7 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
       Get.back();
     }
   }
+
   Future<void> pickDate() async {
     DateTime? picked = await showDatePicker(
       context: context,

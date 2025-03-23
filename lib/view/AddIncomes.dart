@@ -25,7 +25,8 @@ class AddIncomes extends StatelessWidget {
             SizedBox(height: hight(context) * .02),
             _buildTextField(_nameController, "Name", TextInputType.text),
             SizedBox(height: hight(context) * .03),
-            _buildTextField(_valueController, "Enter Income Value", TextInputType.number),
+            _buildTextField(
+                _valueController, "Enter Income Value", TextInputType.number),
             SizedBox(height: hight(context) * .03),
             _buildCategoryDropdown(),
             SizedBox(height: hight(context) * .03),
@@ -36,36 +37,38 @@ class AddIncomes extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, TextInputType type) {
+  Widget _buildTextField(
+      TextEditingController controller, String label, TextInputType type) {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
-    child: TextField(
-    controller: controller,
-    keyboardType: type,
-    decoration: InputDecoration(
-    labelText: label,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-    ),
-    ));
-    }
+        child: TextField(
+          controller: controller,
+          keyboardType: type,
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        ));
+  }
 
   Widget _buildCategoryDropdown() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
       child: Obx(() => DropdownButtonFormField<String>(
-        value: controller.selectedCategory.value,
-        items: controller.incomeCategories
-            .map((category) => DropdownMenuItem(
-          value: category,
-          child: Text(category),
-        ))
-            .toList(),
-        onChanged: (value) => controller.selectedCategory.value = value!,
-        decoration: InputDecoration(
-          labelText: "Select Category",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      )),
+            value: controller.selectedCategory.value,
+            items: controller.incomeCategories
+                .map((category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    ))
+                .toList(),
+            onChanged: (value) => controller.selectedCategory.value = value!,
+            decoration: InputDecoration(
+              labelText: "Select Category",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          )),
     );
   }
 
@@ -83,16 +86,30 @@ class AddIncomes extends StatelessWidget {
         ),
         child: ElevatedButton(
           onPressed: () async {
+            print("Add button pressed!");
             if (_validateInputs()) {
-              await controller.addIncome(
-                double.parse(_valueController.text),
+              print("Inputs are valid!");
+              bool added = await controller.addIncome(
+                double.tryParse(_valueController.text) ?? 0.0,
                 controller.selectedCategory.value,
                 _nameController.text,
                 DateTime.now(),
               );
-              Get.back();
+
+              if (added) {
+                print("Income added successfully!");
+                if (Get.isSnackbarOpen) {
+                  Get.closeCurrentSnackbar();
+                }
+                Get.back();
+              } else {
+                print("Failed to add income.");
+              }
+            } else {
+              print("Inputs are invalid!");
             }
-          },
+          }
+          ,
           style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(50),
             backgroundColor: const Color(0xFF507da0),
@@ -111,10 +128,14 @@ class AddIncomes extends StatelessWidget {
     if (_nameController.text.isEmpty ||
         _valueController.text.isEmpty ||
         controller.selectedCategory.isEmpty) {
-      Get.snackbar("Error", "Please fill all fields",
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", "Please fill all fields");
+      return false;
+    }
+    if (double.tryParse(_valueController.text) == null) {
+      Get.snackbar("Error", "Invalid price value");
       return false;
     }
     return true;
   }
+
 }

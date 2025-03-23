@@ -55,27 +55,28 @@ class IncomesController extends GetxController {
     }
   }
 
-  Future<void> addIncome(
-    double price,
-    String category,
-    String nameOfExpense,
-    DateTime time,
-  ) async {
+  Future<bool> addIncome(
+      double price,
+      String category,
+      String nameOfExpense,
+      DateTime time,
+      ) async {
+    print("addIncome called!"); // تأكيد استدعاء الدالة
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
       String? userId = prefs.getString('user_id');
-
       if (token == null || userId == null) {
         Get.snackbar('Error', 'Authentication required');
-        return;
+        print("No token or userId found!");
+        return false;
       }
 
       Income newIncome = Income(
         id: 'temp_id',
         price: price,
         category: category,
-        nameOfExpense: nameOfExpense,
+        nameOfIncome: nameOfExpense,
         time: time,
         userId: userId,
       );
@@ -86,16 +87,27 @@ class IncomesController extends GetxController {
         options: Dio.Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
+      print("Response status: ${response.statusCode}");
+      print("Response data: ${response.data}");
+
       if (response.statusCode == 201) {
-        incomes.add(Income.fromJson(response.data['data']));
+        incomes.add(Income.fromJson(response.data));
         Get.snackbar('Success', 'Income added');
+        print("Income added successfully!");
+        return true;
       } else {
         Get.snackbar('Error', 'Failed to add income');
+        print("Failed to add income: ${response.statusCode}");
+        return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'Error adding income: $e');
+      print("Error: $e");
+      return false;
     }
   }
+
+
 
   Future<void> deleteIncome(String id) async {
     try {
