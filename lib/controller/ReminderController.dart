@@ -9,18 +9,23 @@ class ReminderController extends GetxController {
   var reminders = <ReminderModel>[].obs;
   final String baseUrl = "http://10.0.2.2:8000/api/";
   late String? authToken;
+  bool isLoading = false;
 
   @override
   void onInit() {
     _loadToken();
+    fetchReminders();
     super.onInit();
   }
 
   Future<void> _loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('auth_token');
-    print('Auth Token: $authToken');
-    fetchReminders();
+    print('Auth Token Loaded: $authToken');
+    if (authToken == null) {
+      Get.snackbar("Error", "No authentication token found!");
+    }
+    await fetchReminders();
   }
 
   Map<String, String> get _headers {
@@ -38,10 +43,11 @@ class ReminderController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body)['data'] as List;
-        reminders.value = data.map((e) => ReminderModel.fromJson(e)).toList();
+        final data = json.decode(response.body)['data'] as List;
+        reminders.assignAll(data.map((e) => ReminderModel.fromJson(e)));
       }
     } catch (e) {
+      print('Fetch Error: $e');
       Get.snackbar("Error", "Failed to load reminders");
     }
   }
@@ -60,12 +66,19 @@ class ReminderController extends GetxController {
       );
 
       if (response.statusCode == 201) {
-        fetchReminders();
+        final newReminder =
+            ReminderModel.fromJson(json.decode(response.body)['data']);
+        reminders.insert(0, newReminder); // إضافة محلية فورية
+        update();
         return true;
+      } else {
+        print('Error ${response.statusCode}: ${response.body}'); // هنا
+        return false;
       }
       return false;
     } catch (e) {
-      Get.snackbar("خطأ", "فشل في إضافة التذكير");
+      print('Error adding reminder: $e');
+      Get.snackbar("Error", "Failed to add reminder");
       return false;
     }
   }

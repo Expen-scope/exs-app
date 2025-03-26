@@ -108,8 +108,7 @@ class AddIncomes extends StatelessWidget {
             } else {
               print("Inputs are invalid!");
             }
-          }
-          ,
+          },
           style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(50),
             backgroundColor: const Color(0xFF507da0),
@@ -137,5 +136,4 @@ class AddIncomes extends StatelessWidget {
     }
     return true;
   }
-
 }

@@ -12,6 +12,7 @@ class UserController extends GetxController {
   final RxBool isLoading = true.obs;
   var selectedImage = Rx<File?>(null);
   late SharedPreferences _prefs;
+  final Dio _dio = Dio();
 
   @override
   void onInit() {
@@ -54,22 +55,24 @@ class UserController extends GetxController {
     try {
       isLoading.value = true;
       bool rememberMe = _prefs.getBool('remember_me') ?? false;
+
       if (rememberMe) {
         await loadUserData();
+
         if (isLoggedIn.value) {
           bool isValid = await _verifyTokenWithServer();
           if (!isValid) {
             await clearUserData();
             isLoggedIn.value = false;
+            Get.offAllNamed('/Login');
           } else {
-            // إذا كان التوكن صالحًا، يظل المستخدم مسجل الدخول
             Get.offAllNamed('/HomePage');
           }
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Initialization failed: $e');
       await clearUserData();
+      Get.offAllNamed('/Login');
     } finally {
       isLoading.value = false;
     }
@@ -77,7 +80,7 @@ class UserController extends GetxController {
 
   Future<bool> _verifyTokenWithServer() async {
     try {
-      final response = await Dio().get(
+      final response = await _dio.get(
         'http://10.0.2.2:8000/api/verify-token',
         options: Options(
           headers: {
@@ -86,6 +89,33 @@ class UserController extends GetxController {
         ),
       );
       return response.statusCode == 200;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        return await _refreshToken();
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> _refreshToken() async {
+    try {
+      final response = await _dio.post(
+        'http://10.0.2.2:8000/api/refresh',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${_prefs.getString('auth_token')}',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        String newToken = response.data['authorisation']['token'];
+        await _prefs.setString('auth_token', newToken);
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }
@@ -127,26 +157,31 @@ class UserController extends GetxController {
 
   Future<void> login(String email, String password) async {
     try {
-      final response = await Dio().post(
+      final response = await _dio.post(
         'http://10.0.2.2:8000/api/login',
         data: {'email': email, 'password': password},
       );
 
       if (response.statusCode == 200) {
-        // حفظ التوكن
-        String token = response.data['token'];
+        String token = response.data['authorisation']['token'];
+        UserModel userData = UserModel.fromJson(response.data['user']);
+
         await _prefs.setString('auth_token', token);
         await _prefs.setBool('remember_me', true);
+        await _prefs.setString('user_data', json.encode(userData.toJson()));
 
-        // حفظ بيانات المستخدم
-        user.value = UserModel.fromJson(response.data['user']);
-        await _prefs.setString('user_data', json.encode(user.value!.toJson()));
-
+        user.value = userData;
         isLoggedIn.value = true;
         Get.offAllNamed('/HomePage');
       }
+    } on DioException catch (e) {
+      String errorMessage = 'Login failed';
+      if (e.response?.statusCode == 401) {
+        errorMessage = 'Invalid email or password';
+      }
+      Get.snackbar('Error', errorMessage);
     } catch (e) {
-      Get.snackbar('Error', 'Login failed: $e');
+      Get.snackbar('Error', 'An unexpected error occurred');
     }
   }
 }

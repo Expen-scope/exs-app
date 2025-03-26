@@ -53,7 +53,6 @@ class ExpencesController extends GetxController {
     //   Get.snackbar('Error', 'Failed to load expenses');
     // }
     if (kDebugMode) {
-      // في وضع التطوير، أضف بيانات وهمية فقط
       listExpenses.value = [
         Expense(type: "Food & Drinks", value: 50.0, date: ''),
         Expense(type: "Shopping", value: 120.0, date: ''),
@@ -62,7 +61,6 @@ class ExpencesController extends GetxController {
       return;
     }
 
-    // جلب البيانات من API في الوضع العادي
     try {
       final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/'));
       if (response.statusCode == 200) {

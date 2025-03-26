@@ -21,7 +21,8 @@ class Income {
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       category: json['category']?.toString() ?? '',
       nameOfIncome: json['name_of_income']?.toString() ?? '',
-      time: json['time'] != null ? DateTime.parse(json['time']) : DateTime.now(),
+      time:
+          json['time'] != null ? DateTime.parse(json['time']) : DateTime.now(),
       userId: json['user_id']?.toString() ?? '',
     );
   }
@@ -35,5 +36,4 @@ class Income {
       'user_id': userId,
     };
   }
-
 }

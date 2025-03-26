@@ -56,11 +56,11 @@ class IncomesController extends GetxController {
   }
 
   Future<bool> addIncome(
-      double price,
-      String category,
-      String nameOfExpense,
-      DateTime time,
-      ) async {
+    double price,
+    String category,
+    String nameOfExpense,
+    DateTime time,
+  ) async {
     print("addIncome called!"); // تأكيد استدعاء الدالة
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -106,8 +106,6 @@ class IncomesController extends GetxController {
       return false;
     }
   }
-
-
 
   Future<void> deleteIncome(String id) async {
     try {

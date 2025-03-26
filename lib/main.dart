@@ -25,17 +25,18 @@ import 'controller/user_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Get.putAsync(() => SharedPreferences.getInstance());
 
-  Get.put(UserController()..loadUserData());
+  final userController = Get.put(UserController());
+  await userController.loadUserData();
+  await userController.initializeUser();
 
-  Get.put(UserController()..initializeUser());
   Get.put(ExpencesController());
   Get.put(IncomesController());
   Get.put(GoalController());
   Get.put(ReminderController());
 
+  // Lazy loading للتحكمات اللي تحتاجها عند الطلب فقط
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => RegisterController());
 
@@ -99,6 +100,10 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: "/Setting",
           page: () => Setting(),
+        ),
+        GetPage(
+          name: ("/Reminder"),
+          page: () => RegisterPage(),
         ),
       ],
       initialRoute: '/MyCustomSplashScreen',

@@ -50,7 +50,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.access_alarm,
                   title: 'Reminders',
-                  route: () => Get.to(Reminders()),
+                  route: () => Get.to(() => Reminders()),
                 ),
                 _buildDrawerItem(
                   icon: Icons.flag,
