@@ -24,7 +24,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
   Future<void> saveReminder() async {
     setState(() => isLoading = true);
-
     if (nameController.text.isEmpty ||
         priceController.text.isEmpty ||
         collectedController.text.isEmpty ||

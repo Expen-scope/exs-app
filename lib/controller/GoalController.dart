@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:ui';
+import 'package:googleapis/calendar/v3.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -9,19 +11,20 @@ class GoalController extends GetxController {
   final RxList<GoalModel> goals = <GoalModel>[].obs;
   final String _apiUrl = "http://10.0.2.2:8000/api/";
   final RxBool isLoading = false.obs;
-  late String? _token;
+  late String? authToken;
 
   @override
   void onInit() {
     _loadToken();
+    fetchGoals();
     super.onInit();
   }
 
   Future<void> _loadToken() async {
     final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('auth_token');
-    print('Auth Token Loaded: $_token');
-    if (_token == null) {
+    authToken = prefs.getString('auth_token');
+    print('Auth Token Loaded: $authToken');
+    if (authToken == null) {
       Get.snackbar("Error", "No authentication token found!");
     }
     await fetchGoals();
@@ -30,31 +33,24 @@ class GoalController extends GetxController {
   Map<String, String> get _headers {
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $_token',
+      'Authorization': 'Bearer $authToken',
     };
   }
 
   Future<void> fetchGoals() async {
-    isLoading.value = true;
     try {
       final response = await http.get(
-        Uri.parse("${_apiUrl}goal"),
+        Uri.parse('${_apiUrl}goal'),
         headers: _headers,
       );
+
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData.containsKey('data')) {
-          final data = responseData['data'] as List;
-          goals.assignAll(data.map((e) => GoalModel.fromJson(e)));
-        }
-      } else {
-        Get.snackbar('Error', 'Failed to load goals: ${response.statusCode}');
+        final data = json.decode(response.body)['data'] as List;
+        goals.assignAll(data.map((e) => GoalModel.fromJson(e)));
       }
     } catch (e) {
-      Get.snackbar('Error', 'Connection Error: $e');
-      print('Error details: $e');
-    } finally {
-      isLoading.value = false;
+      print('Fetch Error: $e');
+      Get.snackbar("Error", "Failed to load reminders");
     }
   }
 
@@ -90,45 +86,76 @@ class GoalController extends GetxController {
     }
   }
 
-  // تحديث هدف
-  Future<void> updateGoal(int id, GoalModel goal) async {
-    isLoading.value = true;
+  Future<bool> updateGoal(int id, GoalModel goal) async {
     try {
       final response = await http.put(
-        Uri.parse("${_apiUrl}updategoal/$id"),
+        Uri.parse('${_apiUrl}updategoal/$id'), // استخدام الـ id الصحيح هنا
         headers: _headers,
-        body: jsonEncode(goal.toJson()),
+        body: json.encode({
+          'name': goal.name,
+          'time': DateFormat('yyyy-MM-dd HH:mm:ss').format(goal.time!),
+          'price': goal.price,
+          'category': goal.category,
+          'collectedmoney': goal.collectedmoney,
+        }),
       );
+
+      print('Update Status Code: ${response.statusCode}');
+      print('Update Response: ${response.body}');
+
       if (response.statusCode == 200) {
-        await fetchGoals(); // جلب الأهداف بعد التحديث
-        Get.back(); // إغلاق شاشة التحديث
+        await fetchGoals();
+        Get.snackbar("Success", "Goal updated successfully",
+            backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0));
+        return true;
       } else {
-        Get.snackbar('Error', 'Update failed: ${response.body}');
+        Get.snackbar("Error",
+            "Failed to update: ${json.decode(response.body)['message']}",
+            backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0));
+        return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'Update Error: $e');
-    } finally {
-      isLoading.value = false;
+      Get.snackbar("Connection Error", "Check your internet connection",
+          backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0)
+          //     Get.snackbar("Success", "Goal updated successfully",
+          //         backgroundColor: Colors.green,
+          //         colorText: Colors.white
+          //     );
+          //     return true;
+          //   } else {
+          //     Get.snackbar("Error", "Failed to update: ${json.decode(response.body)['message']}",
+          //         backgroundColor: Colors.red,
+          //         colorText: Colors.white
+          //     );
+          //     return false;
+          //   }
+          // } catch (e) {
+          //   Get.snackbar("Connection Error", "Check your internet connection",
+          //       backgroundColor: Colors.orange,
+          //       colorText: Colors.white
+          );
+      return false;
     }
   }
 
-  // حذف هدف
-  Future<void> deleteGoal(int id) async {
-    isLoading.value = true;
+  Future<bool> deleteGoal(int id) async {
     try {
       final response = await http.delete(
-        Uri.parse("${_apiUrl}deletegoal/$id"),
+        Uri.parse('${_apiUrl}deletegoal/$id'),
         headers: _headers,
       );
+
       if (response.statusCode == 200) {
-        await fetchGoals(); // جلب الأهداف بعد الحذف
+        await fetchGoals();
+        return true;
       } else {
-        Get.snackbar('Error', 'Delete failed: ${response.body}');
+        print('Delete Error: ${response.statusCode} - ${response.body}');
+        return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'Delete Error: $e');
-    } finally {
-      isLoading.value = false;
+      print('Delete Exception: $e');
+      Get.snackbar("Error", "Failed to delete reminder");
+      return false;
     }
   }
 }

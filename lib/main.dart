@@ -36,7 +36,6 @@ void main() async {
   Get.put(GoalController());
   Get.put(ReminderController());
 
-  // Lazy loading للتحكمات اللي تحتاجها عند الطلب فقط
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => RegisterController());
 

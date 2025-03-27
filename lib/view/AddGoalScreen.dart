@@ -30,7 +30,6 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
 
   Future<void> saveGoal() async {
     setState(() => isLoading = true);
-
     if (nameController.text.isEmpty ||
         priceController.text.isEmpty ||
         selectedDate == null ||
@@ -60,42 +59,39 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       selectedTime!.hour,
       selectedTime!.minute,
     );
-    try {
-      final newGoal = GoalModel(
-        id: null,
-        name: nameController.text,
-        price: double.parse(priceController.text),
-        collectedmoney: double.parse(collectedController.text),
-        category: selectedCategory,
-        time: finalDateTime,
-        createdAt: DateTime.now(),
-      );
 
-      if (await goalController.addGoal(newGoal)) {
-        await Future.delayed(Duration(milliseconds: 300));
-        if (mounted) {
-          Navigator.pop(context);
-          goalController.fetchGoals();
-        }
+    final newGoal = GoalModel(
+      id: null,
+      name: nameController.text,
+      price: double.parse(priceController.text),
+      collectedmoney: double.parse(collectedController.text),
+      category: selectedCategory,
+      time: finalDateTime,
+      createdAt: DateTime.now(),
+    );
+
+    bool success = await goalController.addGoal(newGoal);
+    if (success) {
+      await Future.delayed(Duration(milliseconds: 300));
+      if (mounted) {
+        Navigator.pop(context);
+        goalController.fetchGoals();
       }
-    } catch (e) {
-      showSnackBar('Error saving goal: ${e.toString()}');
-    } finally {
-      if (mounted) setState(() => isLoading = false);
     }
   }
 
   Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null && mounted) {
+    if (picked != null) {
       setState(() => selectedDate = picked);
     }
+    setState(() => isLoading = false);
   }
 
   void showSnackBar(String message) {
@@ -106,6 +102,16 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  Future<void> pickTime() async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() => selectedTime = picked);
+    }
   }
 
   @override
@@ -164,6 +170,16 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                     : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}"),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: pickDate,
+              ),
+              Row(
+                children: [
+                  Text(
+                      "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}"),
+                  IconButton(
+                    icon: const Icon(Icons.access_time),
+                    onPressed: pickTime,
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
               ElevatedButton(
