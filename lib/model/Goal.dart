@@ -1,8 +1,8 @@
 class GoalModel {
-  final int id;
+  final int? id;
   String name;
   double price;
-  double collectedmoney; // غير nullable الآن
+  double collectedmoney;
   String category;
   DateTime time;
   DateTime createdAt;
@@ -11,7 +11,7 @@ class GoalModel {
     required this.id,
     required this.name,
     required this.price,
-    required this.collectedmoney, // مطلوب الآن
+    required this.collectedmoney,
     required this.category,
     required this.time,
     required this.createdAt,
@@ -22,7 +22,7 @@ class GoalModel {
       id: json['id'] as int,
       name: json['name'] as String,
       price: (json['price'] as num).toDouble(),
-      collectedmoney: (json['collectedmoney'] as num?)?.toDouble() ?? 0.0,
+      collectedmoney: (json['collectedmoney'] as num).toDouble(),
       category: json['category'] as String,
       time: DateTime.parse(json['time'] as String),
       createdAt: DateTime.parse(json['created_at'] as String),

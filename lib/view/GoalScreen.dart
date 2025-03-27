@@ -24,8 +24,6 @@ class GoalsScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/goals.png', height: 150),
-                const SizedBox(height: 20),
                 Text(
                   "Start Achieving Your Dreams!",
                   style: TextStyle(
@@ -116,7 +114,7 @@ class GoalsScreen extends StatelessWidget {
                 trailing: IconButton(
                   icon: const Icon(Icons.edit, color: Color(0xFF264653)),
                   onPressed: () {
-                    Get.to(() => EditGoalScreen(goal: goal));
+                    // Get.to(() => EditGoalScreen(goal: goal));
                   },
                 ),
               ),

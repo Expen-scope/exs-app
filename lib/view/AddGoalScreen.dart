@@ -15,8 +15,10 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController collectedController = TextEditingController();
 
+  bool isLoading = false;
   String selectedCategory = "Travel";
   DateTime? selectedDate;
+  TimeOfDay? selectedTime;
 
   final List<String> categories = [
     "Travel",
@@ -26,38 +28,84 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     "Others"
   ];
 
-  Future<void> pickDate(BuildContext context) async {
+  Future<void> saveGoal() async {
+    setState(() => isLoading = true);
+
+    if (nameController.text.isEmpty ||
+        priceController.text.isEmpty ||
+        selectedDate == null ||
+        selectedTime == null) {
+      showSnackBar('Please fill all required fields');
+      setState(() => isLoading = false);
+      return;
+    }
+
+    try {
+      double.parse(priceController.text);
+      double.parse(collectedController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Price and collected amount must be valid numbers'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    DateTime finalDateTime = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+    try {
+      final newGoal = GoalModel(
+        id: null,
+        name: nameController.text,
+        price: double.parse(priceController.text),
+        collectedmoney: double.parse(collectedController.text),
+        category: selectedCategory,
+        time: finalDateTime,
+        createdAt: DateTime.now(),
+      );
+
+      if (await goalController.addGoal(newGoal)) {
+        await Future.delayed(Duration(milliseconds: 300));
+        if (mounted) {
+          Navigator.pop(context);
+          goalController.fetchGoals();
+        }
+      }
+    } catch (e) {
+      showSnackBar('Error saving goal: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> pickDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
+
+    if (picked != null && mounted) {
       setState(() => selectedDate = picked);
     }
   }
 
-  void saveGoal() {
-    if (nameController.text.isEmpty ||
-        priceController.text.isEmpty ||
-        selectedDate == null) {
-      Get.snackbar("Error", "Please fill all required fields");
-      return;
-    }
-
-    GoalModel newGoal = GoalModel(
-      id: 0,
-      name: nameController.text,
-      price: double.tryParse(priceController.text) ?? 0.0,
-      collectedmoney: double.tryParse(collectedController.text) ?? 0.0,
-      category: selectedCategory,
-      time: selectedDate!,
-      createdAt: DateTime.now(),
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
-
-    goalController.addGoal(newGoal);
-    Get.back();
   }
 
   @override
@@ -115,7 +163,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                     ? "Select Deadline"
                     : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}"),
                 trailing: const Icon(Icons.calendar_today),
-                onTap: () => pickDate(context),
+                onTap: pickDate,
               ),
               const SizedBox(height: 30),
               ElevatedButton(

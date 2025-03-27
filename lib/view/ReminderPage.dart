@@ -81,13 +81,18 @@ class Reminders extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Color(0xFF264653)),
+                        icon:
+                            const Icon(Icons.delete, color: Color(0xFF264653)),
                         onPressed: () async {
-                          bool success = await reminderController.deleteReminder(reminder.id!);
+                          bool success = await reminderController
+                              .deleteReminder(reminder.id!);
                           if (success) {
-                            Get.snackbar("Success", "Reminder deleted successfully", snackPosition: SnackPosition.BOTTOM);
+                            Get.snackbar(
+                                "Success", "Reminder deleted successfully",
+                                snackPosition: SnackPosition.BOTTOM);
                           } else {
-                            Get.snackbar("Error", "Failed to delete reminder", snackPosition: SnackPosition.BOTTOM);
+                            Get.snackbar("Error", "Failed to delete reminder",
+                                snackPosition: SnackPosition.BOTTOM);
                           }
                         },
                       ),

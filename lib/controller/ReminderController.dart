@@ -68,11 +68,11 @@ class ReminderController extends GetxController {
       if (response.statusCode == 201) {
         final newReminder =
             ReminderModel.fromJson(json.decode(response.body)['data']);
-        reminders.insert(0, newReminder); // إضافة محلية فورية
+        reminders.insert(0, newReminder);
         update();
         return true;
       } else {
-        print('Error ${response.statusCode}: ${response.body}'); // هنا
+        print('Error ${response.statusCode}: ${response.body}');
         return false;
       }
       return false;
@@ -82,6 +82,7 @@ class ReminderController extends GetxController {
       return false;
     }
   }
+
   Future<bool> deleteReminder(int id) async {
     try {
       final response = await http.delete(
@@ -102,7 +103,6 @@ class ReminderController extends GetxController {
       return false;
     }
   }
-
 
   Future<bool> updateReminder(ReminderModel reminder) async {
     try {
