@@ -51,24 +51,47 @@ class Reminders extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
-                child: ListTile(
-                  contentPadding: EdgeInsets.all(15),
-                  title: Text(
-                    reminder.name ?? 'No Title',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    // ${reminderController.reminders.first.name}"
-                    'Amount: ${currencyFormat.format(reminder.price)}\n'
-                    'Due in: ${remainingDuration.inDays} days, '
-                    '${remainingDuration.inHours.remainder(24)} hours\n'
-                    'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.time)}',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Color(0xFF264653)),
-                    onPressed: () =>
-                        reminderController.deleteReminder(reminder.id!),
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        reminder.name ?? 'No Title',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Amount: ${currencyFormat.format(reminder.price)}',
+                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      Text(
+                        'Due in: ${remainingDuration.inDays} days, '
+                        '${remainingDuration.inHours.remainder(24)} hours',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      Text(
+                        'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.time)}',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      SizedBox(height: 10),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Color(0xFF264653)),
+                        onPressed: () async {
+                          bool success = await reminderController.deleteReminder(reminder.id!);
+                          if (success) {
+                            Get.snackbar("Success", "Reminder deleted successfully", snackPosition: SnackPosition.BOTTOM);
+                          } else {
+                            Get.snackbar("Error", "Failed to delete reminder", snackPosition: SnackPosition.BOTTOM);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -88,102 +111,3 @@ class Reminders extends StatelessWidget {
     );
   }
 }
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:intl/intl.dart';
-//
-// import '../const/AppBarC.dart';
-// import '../const/sh/sharedreminder.dart';
-// import '../controller/ReminderController.dart';
-// import '../model/Reminder.dart';
-// import 'AddReminder.dart';
-//
-// class Reminders extends StatelessWidget {
-//   static String id = "Reminders";
-//   final SharedPreferencesServiceReminder sharedPreferencesServiceReminder = Get.put(SharedPreferencesServiceReminder());
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final currencyFormat = NumberFormat.currency(locale: 'en_US', symbol: '\$');
-//     return Scaffold(
-//       appBar: Appbarofpage(TextPage: "Reminders"),
-//       body: RefreshIndicator(
-//         onRefresh: () async {
-//           await fetchReminders();
-//         },
-//         child: FutureBuilder<List<Map<String, dynamic>>>(
-//           future: sharedPreferencesServiceReminder.getTReminder(), // جلب التذكيرات من SharedPreferences
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Center(child: CircularProgressIndicator());
-//             }
-//             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//               return const Center(
-//                 child: Text(
-//                   'No reminders added yet!',
-//                   style: TextStyle(color: Colors.grey, fontSize: 18),
-//                 ),
-//               );
-//             }
-//
-//             var reminders = snapshot.data!;
-//             return ReorderableListView.builder(
-//               itemCount: reminders.length,
-//               onReorder: (oldIndex, newIndex) {
-//                 if (newIndex > oldIndex) newIndex--;
-//                 final item = reminders[oldIndex];
-//                 reminders.removeAt(oldIndex);
-//                 reminders.insert(newIndex, item);
-//               },
-//               itemBuilder: (context, index) {
-//                 final reminder = reminders[index];
-//                 DateTime reminderTime = DateTime.parse(reminder['time']);
-//                 final remainingDuration = reminderTime.difference(DateTime.now());
-//                 final remainingMinutes = remainingDuration.inMinutes % 60;
-//                 final remainingSeconds = remainingDuration.inSeconds % 60;
-//                 return Card(
-//                   key: ValueKey(reminder['title']),
-//                   elevation: 5,
-//                   color: Colors.grey[200],
-//                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-//                   shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(12)),
-//                   child: ListTile(
-//                     contentPadding: EdgeInsets.all(15),
-//                     title: Text(
-//                       reminder['title'] ?? 'No Title',
-//                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//                     ),
-//                     subtitle: Text(
-//                       '${reminder['description'] ?? ''}\n'
-//                           'Amount: ${currencyFormat.format(reminder['price'])}\n'
-//                           'Due in: ${remainingDuration.inDays} days, '
-//                           '${remainingDuration.inHours.remainder(24)} hours\n'
-//                           'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminderTime)}',
-//                       style: TextStyle(fontSize: 14),
-//                     ),
-//                     trailing: IconButton(
-//                       icon: const Icon(Icons.delete, color: Color(0xFF264653)),
-//                       onPressed: () async {
-//                         // إزالة التذكير من SharedPreferences
-//                         await sharedPreferencesServiceReminder.removeTodo(index);
-//                       },
-//                     ),
-//                   ),
-//                 );
-//               },
-//             );
-//           },
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () async {
-//           await Get.to(() => AddReminderScreen());
-//         },
-//         tooltip: 'Add Reminder',
-//         backgroundColor: const Color(0xFF507da0),
-//         child: const Icon(Icons.add, color: Colors.white),
-//       ),
-//     );
-//   }
-// }

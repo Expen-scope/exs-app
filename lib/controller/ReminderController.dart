@@ -82,7 +82,6 @@ class ReminderController extends GetxController {
       return false;
     }
   }
-
   Future<bool> deleteReminder(int id) async {
     try {
       final response = await http.delete(
@@ -91,15 +90,19 @@ class ReminderController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        fetchReminders();
+        await fetchReminders();
         return true;
+      } else {
+        print('Delete Error: ${response.statusCode} - ${response.body}');
+        return false;
       }
-      return false;
     } catch (e) {
+      print('Delete Exception: $e');
       Get.snackbar("Error", "Failed to delete reminder");
       return false;
     }
   }
+
 
   Future<bool> updateReminder(ReminderModel reminder) async {
     try {
