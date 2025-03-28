@@ -111,15 +111,15 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: hight(context)*0.025),
+            SizedBox(height: hight(context) * 0.025),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
-                cursorColor:Color(0xFF264653),
+                cursorColor: Color(0xFF264653),
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Reminder Name",
-                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -130,16 +130,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ),
               ),
             ),
-            SizedBox(height: hight(context)*0.024),
+            SizedBox(height: hight(context) * 0.024),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
-                cursorColor:Color(0xFF264653),
+                cursorColor: Color(0xFF264653),
                 controller: priceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Amount",
-                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -150,16 +150,16 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ),
               ),
             ),
-            SizedBox(height: hight(context)*0.024),
+            SizedBox(height: hight(context) * 0.024),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
-                cursorColor:Color(0xFF264653),
+                cursorColor: Color(0xFF264653),
                 controller: collectedController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Amount collected",
-                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -170,7 +170,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ),
               ),
             ),
-            SizedBox(height: hight(context)*0.024),
+            SizedBox(height: hight(context) * 0.024),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -186,8 +186,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.0, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -216,8 +216,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.0, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
                         child: Row(
                           children: [
                             Text(
@@ -237,7 +237,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ),
               ],
             ),
-            SizedBox(height: hight(context)*0.034),
+            SizedBox(height: hight(context) * 0.034),
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),

@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 import '../const/AppBarC.dart';
 import '../const/Constants.dart';
 import '../const/Drawer.dart';
 import '../controller/user_controller.dart';
 
-class Setting extends StatelessWidget {
-  final UserController controller = Get.put(UserController());
+class Setting extends StatefulWidget {
+  const Setting({super.key});
 
-  Setting({super.key});
+  @override
+  State<Setting> createState() => _SettingState();
+}
+
+class _SettingState extends State<Setting> {
+  final UserController controller = Get.put(UserController());
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -134,18 +142,21 @@ class Setting extends StatelessWidget {
                       context,
                       label: 'old password',
                       icon: Icons.lock_outline,
+                      controller: _oldPasswordController,
                     ),
                     SizedBox(height: hight(context) * 0.02),
                     _buildPasswordField(
                       context,
                       label: 'new password',
                       icon: Icons.lock_reset,
+                      controller: _newPasswordController,
                     ),
                     SizedBox(height: hight(context) * 0.02),
                     _buildPasswordField(
                       context,
                       label: 'confirm password',
                       icon: Icons.lock_clock,
+                      controller: _confirmPasswordController,
                     ),
                     SizedBox(height: hight(context) * 0.04),
                     Center(
@@ -158,7 +169,25 @@ class Setting extends StatelessWidget {
                           ),
                           elevation: 5,
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (_oldPasswordController.text.isEmpty ||
+                              _newPasswordController.text.isEmpty ||
+                              _confirmPasswordController.text.isEmpty) {
+                            Get.snackbar('Error', 'Please fill all fields',
+                                snackPosition: SnackPosition.BOTTOM);
+                            return;
+                          }
+                          if (_newPasswordController.text !=
+                              _confirmPasswordController.text) {
+                            Get.snackbar('Error', 'Passwords do not match',
+                                snackPosition: SnackPosition.BOTTOM);
+                            return;
+                          }
+                          await controller.changePassword(
+                            currentPassword: _oldPasswordController.text,
+                            newPassword: _newPasswordController.text,
+                          );
+                        },
                         child: Text(
                           'Update',
                           style: TextStyle(
@@ -178,23 +207,29 @@ class Setting extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordField(BuildContext context,
-      {required String label, required IconData icon}) {
+  Widget _buildPasswordField(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+  }) {
     return TextFormField(
+      controller: controller,
       obscureText: true,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF507da0)),
+        prefixIcon: Icon(icon, color: const Color(0xFF507da0)),
+        labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Color(0xFF507da0), width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Color(0xFF264653), width: 2),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
     );
   }

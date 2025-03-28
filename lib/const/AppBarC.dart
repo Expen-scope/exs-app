@@ -27,7 +27,6 @@ class Appbarofpage extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
             ),
-
             Align(
               alignment: Alignment.center,
               child: Text(
