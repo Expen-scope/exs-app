@@ -52,7 +52,7 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
       final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
 
       if (enteredAmount <= 0) {
-        Get.snackbar("خطأ", "الرجاء إدخال مبلغ صحيح أكبر من الصفر");
+        Get.snackbar("Error", "Please enter an integer greater than zero");
         return;
       }
 
@@ -60,7 +60,8 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
       final remaining = widget.goal.price! - widget.goal.collectedmoney!;
 
       if (newTotal > widget.goal.price!) {
-        Get.snackbar("خطأ", "المبلغ المدخل يتجاوز المتبقي ($remaining)");
+        Get.snackbar("Error",
+            "The entered amount exceeds the remaining amount ($remaining)");
         return;
       }
 
@@ -72,14 +73,14 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
       if (success) {
         _amountController.clear();
         if (newTotal >= widget.goal.price!) {
-          await _showNotification(
-              "هدف مكتمل!", "تهانينا! لقد حققت هدف ${widget.goal.name}");
+          await _showNotification("Goal Completed!",
+              "Congratulations! You have achieved your goal!${widget.goal.name}");
         }
         Get.back();
         Get.until((route) => Get.currentRoute == '/Goals');
       }
     } catch (e) {
-      Get.snackbar("خطأ التحديث", "فشل في تحديث الهدف: ${e.toString()}");
+      Get.snackbar("Update Error", "Failed to update target: ${e.toString()}");
     }
   }
 
@@ -91,7 +92,7 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
     final remainingAmount = totalAmount - savedAmount;
 
     return Scaffold(
-      appBar: Appbarofpage(TextPage: "تعديل هدف: ${widget.goal.name}"),
+      appBar: Appbarofpage(TextPage: " ${widget.goal.name}"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -115,7 +116,7 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
           sections: [
             PieChartSectionData(
               value: progress * 100,
-              color: Colors.blue,
+              color: Color(0xFF507da0),
               title: "${(progress * 100).toStringAsFixed(1)}%",
               radius: 60,
               titleStyle: const TextStyle(
@@ -139,9 +140,11 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Text(
-        "المدخر: ${saved.toStringAsFixed(2)} / ${total.toStringAsFixed(2)}",
+        "saver: ${saved.toStringAsFixed(2)} / ${total.toStringAsFixed(2)}",
         style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2e495e)),
       ),
     );
   }
@@ -150,14 +153,19 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
     return TextFormField(
       controller: _amountController,
       decoration: InputDecoration(
-        labelText: "المبلغ المضاف (المتبقي: ${remaining.toStringAsFixed(2)})",
+        labelText: "Added amount (remaining:${remaining.toStringAsFixed(2)})",
+        labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.blue)),
-        prefixIcon: Icon(Icons.attach_money, color: Colors.blue[800]),
+            borderSide: const BorderSide(color: Color(0xFF2e495e))),
+        prefixIcon: Icon(Icons.attach_money, color: Color(0xFF2e495e)),
         suffixIcon: IconButton(
           icon: const Icon(Icons.clear),
           onPressed: () => _amountController.clear(),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Color(0xFF264653), width: 2),
         ),
       ),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -174,11 +182,12 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
           onPressed: _handleGoalUpdate,
           icon: const Icon(Icons.update, color: Colors.white),
           label: const Text(
-            "تحديث التقدم",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            "Update",
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue[800],
+            backgroundColor: Color(0xFF507da0),
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

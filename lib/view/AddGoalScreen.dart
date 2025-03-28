@@ -1,3 +1,4 @@
+import 'package:abo_najib_2/const/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../const/AppBarC.dart';
@@ -20,13 +21,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
-  final List<String> categories = [
-    "Travel",
-    "Education",
-    "Electronics",
-    "Sports",
-    "Others"
-  ];
+  final List<String> categories = ["Travel", "Savings", "Education", "Others"];
 
   Future<void> saveGoal() async {
     setState(() => isLoading = true);
@@ -123,32 +118,54 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: hight(context)*0.025),
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Goal Name",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: hight(context)*0.024),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Target Amount",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: hight(context)*0.024),
               TextField(
                 controller: collectedController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Initial Saved Amount",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: hight(context)*0.024),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
                 items: categories.map((category) {
@@ -158,30 +175,86 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   );
                 }).toList(),
                 onChanged: (value) => setState(() => selectedCategory = value!),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Category",
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: Text(selectedDate == null
-                    ? "Select Deadline"
-                    : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}"),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: pickDate,
-              ),
+              SizedBox(height: hight(context)*0.024),
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                      "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}"),
-                  IconButton(
-                    icon: const Icon(Icons.access_time),
-                    onPressed: pickTime,
+                  GestureDetector(
+                    onTap: pickTime,
+                    child: Expanded(
+                      flex: 1,
+                      child: Card(
+                        elevation: 8,
+                        color: Colors.grey[100],
+                        margin: EdgeInsets.all(4.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 4.0, vertical: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.calendar_today, color: Colors.blue),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: pickDate,
+                    child: Expanded(
+                      flex: 1,
+                      child: Card(
+                        elevation: 8,
+                        color: Colors.grey[100],
+                        margin: EdgeInsets.all(10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 4.0, vertical: 8),
+                          child: Row(
+                            children: [
+                              Text(
+                                selectedDate == null
+                                    ? "Select Deadline"
+                                    : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.access_time, color: Colors.green),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: hight(context)*0.034),
               ElevatedButton(
                 onPressed: saveGoal,
                 style: ElevatedButton.styleFrom(

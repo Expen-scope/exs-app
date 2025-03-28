@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class Appbarofpage extends StatelessWidget implements PreferredSizeWidget {
   final String TextPage;
 
-  /// 🔹 إضافة `super.key`
   const Appbarofpage({super.key, required this.TextPage});
 
   @override
@@ -19,7 +18,6 @@ class Appbarofpage extends StatelessWidget implements PreferredSizeWidget {
       child: SafeArea(
         child: Stack(
           children: [
-            /// 🔙 زر الرجوع
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
@@ -30,7 +28,6 @@ class Appbarofpage extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-            /// 🏆 العنوان في المنتصف
             Align(
               alignment: Alignment.center,
               child: Text(
@@ -48,7 +45,6 @@ class Appbarofpage extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// 🔥 هذا يجعل الكود يعمل بدون أخطاء
   @override
   Size get preferredSize => const Size.fromHeight(60.0);
 }
