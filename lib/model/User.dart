@@ -6,6 +6,7 @@ class UserModel {
   final String createdAt;
   final String updatedAt;
   final String? profileImageUrl;
+  final String? avatar;
 
   UserModel({
     required this.id,
@@ -15,6 +16,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     this.profileImageUrl,
+    this.avatar,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserModel {
       createdAt: json['user']['created_at']?.toString() ?? '',
       updatedAt: json['user']['updated_at']?.toString() ?? '',
       profileImageUrl: json['profileImageUrl'],
+      avatar: json['avatar'],
     );
   }
 
