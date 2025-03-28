@@ -106,6 +106,7 @@ class GoalController extends GetxController {
 
       if (response.statusCode == 200) {
         await fetchGoals();
+        update();
         Get.snackbar(
           "Success",
           "Goal updated successfully",

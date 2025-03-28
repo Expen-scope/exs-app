@@ -92,6 +92,7 @@ class MyApp extends StatelessWidget {
           name: ("/AddGoal"),
           page: () => AddGoalScreen(),
         ),
+
         GetPage(
           name: "/MyCustomSplashScreen",
           page: () => MyCustomSplashScreen(),
