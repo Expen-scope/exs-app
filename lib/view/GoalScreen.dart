@@ -115,9 +115,16 @@ class GoalsScreen extends StatelessWidget {
                     ],
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.edit, color: Color(0xFF264653)),
-                    onPressed: () {
-                      Get.to(() => EditGoalScreen(goal: goal));
+                    icon: const Icon(Icons.delete, color: Color(0xFF264653)),
+                    onPressed: () async {
+                      bool success = await goalController.deleteGoal(goal.id!);
+                      if (success) {
+                        Get.snackbar("Success", "Goal deleted successfully",
+                            snackPosition: SnackPosition.BOTTOM);
+                      } else {
+                        Get.snackbar("Error", "Failed to delete goal",
+                            snackPosition: SnackPosition.BOTTOM);
+                      }
                     },
                   ),
                 ),

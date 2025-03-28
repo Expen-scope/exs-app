@@ -34,6 +34,7 @@ class GoalController extends GetxController {
     return {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $authToken',
+      'Accept': 'application/json',
     };
   }
 
@@ -105,35 +106,29 @@ class GoalController extends GetxController {
 
       if (response.statusCode == 200) {
         await fetchGoals();
-        Get.snackbar("Success", "Goal updated successfully",
-            backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0));
+        Get.snackbar(
+          "Success",
+          "Goal updated successfully",
+          backgroundColor: Color(0xff309040),
+          colorText: Color(0xFFffffff),
+        );
         return true;
       } else {
-        Get.snackbar("Error",
-            "Failed to update: ${json.decode(response.body)['message']}",
-            backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0));
+        Get.snackbar(
+          "Error",
+          "Failed to update: ${json.decode(response.body)['message']}",
+          backgroundColor: Color(0xFFff0000),
+          colorText: Color(0xFFffffff),
+        );
         return false;
       }
     } catch (e) {
-      Get.snackbar("Connection Error", "Check your internet connection",
-          backgroundColor: Color(0xFF507da0), colorText: Color(0xFF507da0)
-          //     Get.snackbar("Success", "Goal updated successfully",
-          //         backgroundColor: Colors.green,
-          //         colorText: Colors.white
-          //     );
-          //     return true;
-          //   } else {
-          //     Get.snackbar("Error", "Failed to update: ${json.decode(response.body)['message']}",
-          //         backgroundColor: Colors.red,
-          //         colorText: Colors.white
-          //     );
-          //     return false;
-          //   }
-          // } catch (e) {
-          //   Get.snackbar("Connection Error", "Check your internet connection",
-          //       backgroundColor: Colors.orange,
-          //       colorText: Colors.white
-          );
+      Get.snackbar(
+        "Connection Error",
+        "Check your internet connection",
+        backgroundColor: Color(0xFFFFA500),
+        colorText: Color(0xFFffffff),
+      );
       return false;
     }
   }
