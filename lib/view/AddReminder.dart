@@ -111,69 +111,133 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: hight(context) * .02),
+            SizedBox(height: hight(context)*0.025),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
+                cursorColor:Color(0xFF264653),
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Reminder Name",
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context)*0.024),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
+                cursorColor:Color(0xFF264653),
                 controller: priceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Amount",
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context)*0.024),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .007),
               child: TextField(
+                cursorColor:Color(0xFF264653),
                 controller: collectedController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "المبلغ المحصل",
+                  labelText: "Amount collected",
+                  labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context)*0.024),
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                    "the date: ${selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : ''}"),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: pickDate,
+                GestureDetector(
+                  onTap: pickTime,
+                  child: Expanded(
+                    flex: 1,
+                    child: Card(
+                      elevation: 8,
+                      color: Colors.grey[100],
+                      margin: EdgeInsets.all(4.2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.calendar_today, color: Colors.blue),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: pickDate,
+                  child: Expanded(
+                    flex: 1,
+                    child: Card(
+                      elevation: 8,
+                      color: Colors.grey[100],
+                      margin: EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 8),
+                        child: Row(
+                          children: [
+                            Text(
+                              selectedDate == null
+                                  ? "Select Deadline"
+                                  : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.access_time, color: Colors.green),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-            Row(
-              children: [
-                Text(
-                    "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}"),
-                IconButton(
-                  icon: const Icon(Icons.access_time),
-                  onPressed: pickTime,
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
+            SizedBox(height: hight(context)*0.034),
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),

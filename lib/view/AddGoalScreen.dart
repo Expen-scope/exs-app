@@ -120,6 +120,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             children: [
               SizedBox(height: hight(context)*0.025),
               TextField(
+                cursorColor:Color(0xFF264653),
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Goal Name",
@@ -135,6 +136,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               ),
               SizedBox(height: hight(context)*0.024),
               TextField(
+                cursorColor:Color(0xFF264653),
                 controller: priceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -151,10 +153,11 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               ),
               SizedBox(height: hight(context)*0.024),
               TextField(
+                cursorColor:Color(0xFF264653),
                 controller: collectedController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Initial Saved Amount",
+                  labelText: "Amount collected",
                   labelStyle: TextStyle(color: Color(0xFF264653),fontSize: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -255,16 +258,29 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                 ],
               ),
               SizedBox(height: hight(context)*0.034),
-              ElevatedButton(
-                onPressed: saveGoal,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF507da0),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                ),
-                child: const Text(
-                  "Save Goal",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF507da0), Color(0xFF507da0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: saveGoal,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Color(0xFF507da0),
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text(
+                      "Save Goal",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
             ],
