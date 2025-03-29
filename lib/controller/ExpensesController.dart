@@ -1,72 +1,85 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../model/Expenses.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpencesController extends GetxController {
   var listExpenses = <Expense>[].obs;
+  final String baseUrl = "http://10.0.2.2:8000/api/";
+  late String? authToken;
+
+  final List<String> categories = [
+    "Food & Drinks",
+    "Shopping",
+    "Housing",
+    "Transportation",
+    "Vehicle",
+    "Others"
+  ];
 
   final Map<String, ExpenseInfo> expenseData = {
     "Food & Drinks": ExpenseInfo(
-        color: Colors.blue, icon: Icon(Icons.fastfood, color: Colors.blue)),
+        color: Color(0xff2196F3FF),
+        icon: Icon(Icons.fastfood, color: Color(0xff2196F3FF))),
     "Shopping": ExpenseInfo(
-        color: Colors.purple,
-        icon: Icon(Icons.shopping_cart, color: Colors.purple)),
+        color: Color(0xff9C27B0FF),
+        icon: Icon(Icons.shopping_cart, color: Color(0xff9C27B0FF))),
     "Housing": ExpenseInfo(
-        color: Colors.orange, icon: Icon(Icons.home, color: Colors.orange)),
+        color: Color(0xffFF9800FF),
+        icon: Icon(
+          Icons.home,
+          color: Color(0xffFF9800FF),
+        )),
     "Transportation": ExpenseInfo(
-        color: Colors.green,
-        icon: Icon(Icons.directions_bus, color: Colors.green)),
+        color: Color(0xff4CAF50FF),
+        icon: Icon(
+          Icons.directions_bus,
+          color: Color(0xff4CAF50FF),
+        )),
     "Vehicle": ExpenseInfo(
-        color: Colors.red, icon: Icon(Icons.directions_car, color: Colors.red)),
+        color: Color(0xffF44336FF),
+        icon: Icon(
+          Icons.directions_car,
+          color: Color(0xff9E9E9EFF),
+        )),
     "Others": ExpenseInfo(
-        color: Colors.grey, icon: Icon(Icons.category, color: Colors.grey)),
+        color: Color(0xff9E9E9EFF),
+        icon: Icon(Icons.category,           color: Color(0xff9E9E9EFF),
+        )),
   };
 
-  void _addFakeExpenses() {
-    listExpenses.value = [
-      Expense(type: "Food & Drinks", value: 50.0, date: ''),
-      Expense(type: "Shopping", value: 120.0, date: ''),
-      Expense(type: "Housing", value: 300.0, date: ''),
-      Expense(type: "Transportation", value: 45.0, date: ''),
-      Expense(type: "Vehicle", value: 70.0, date: ''),
-      Expense(type: "Others", value: 20.0, date: ''),
-    ];
+  @override
+  void onInit() {
+    super.onInit();
+    _loadToken();
   }
 
-  // جلب المصروفات من API لارافيل
-  Future<void> fetchExpenses() async {
-    // try {
-    //   final response = await http
-    //       .get(Uri.parse('https://your-laravel-api.com/api/expenses'));
-    //
-    //   if (response.statusCode == 200) {
-    //     var data = json.decode(response.body);
-    //     listExpenses.value = List<Expense>.from(
-    //         data.map((expense) => Expense.fromJson(expense)));
-    //   } else {
-    //     Get.snackbar('Error', 'Failed to load expenses');
-    //   }
-    // } catch (e) {
-    //   Get.snackbar('Error', 'Failed to load expenses');
-    // }
-    if (kDebugMode) {
-      listExpenses.value = [
-        Expense(type: "Food & Drinks", value: 50.0, date: ''),
-        Expense(type: "Shopping", value: 120.0, date: ''),
-        Expense(type: "Housing", value: 300.0, date: ''),
-      ];
-      return;
-    }
 
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    authToken = prefs.getString('auth_token');
+    await fetchExpenses();
+  }
+
+  Map<String, String> get _headers {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $authToken',
+    };
+  }
+
+  Future<void> fetchExpenses() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/'));
+      final response = await http.get(
+        Uri.parse('${baseUrl}Expense'),
+        headers: _headers,
+      );
+
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        listExpenses.value = List<Expense>.from(
-            data.map((expense) => Expense.fromJson(expense)));
+        var data = json.decode(response.body)['data'] as List;
+        listExpenses.value = data.map((e) => Expense.fromJson(e)).toList();
       } else {
         Get.snackbar('Error', 'Failed to load expenses');
       }
@@ -75,17 +88,21 @@ class ExpencesController extends GetxController {
     }
   }
 
-  // إضافة مصروف جديد عبر API لارافيل
   Future<void> addExpense(Expense expense) async {
     try {
       final response = await http.post(
-        Uri.parse('https://your-laravel-api.com/api/expenses'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(expense.toJson()),
+        Uri.parse('${baseUrl}addExpense'),
+        headers: _headers,
+        body: json.encode({
+          'price': expense.value.toString(),
+          'category': expense.type,
+          'name_of_expense':  expense.name,
+          'time': expense.date,
+        }),
       );
 
       if (response.statusCode == 201) {
-        fetchExpenses(); // إعادة جلب المصروفات بعد الإضافة
+        await fetchExpenses();
       } else {
         Get.snackbar('Error', 'Failed to add expense');
       }
@@ -94,21 +111,21 @@ class ExpencesController extends GetxController {
     }
   }
 
-  // إزالة مصروف
-  Future<void> removeExpense(int index) async {
-    // try {
-    //   final response = await http.delete(
-    //     // Uri.parse('https://your-laravel-api.com/api/expenses/${listExpenses[index].id}'),
-    //   // );
-    //
-    //   if (response.statusCode == 200) {
-    //     fetchExpenses();  // إعادة جلب المصروفات بعد الحذف
-    //   } else {
-    //     Get.snackbar('Error', 'Failed to remove expense');
-    //   }
-    // } catch (e) {
-    //   Get.snackbar('Error', 'Failed to remove expense');
-    // }
+  Future<void> removeExpense(int id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${baseUrl}deleteExpense/$id'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        await fetchExpenses();
+      } else {
+        Get.snackbar('Error', 'Failed to remove expense');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to remove expense');
+    }
   }
 }
 
