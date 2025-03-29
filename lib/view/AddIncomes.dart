@@ -10,8 +10,8 @@ class AddIncomes extends StatelessWidget {
 
   static String id = 'addIncomes';
   final IncomesController controller = Get.find<IncomesController>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _valueController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController valueController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +23,10 @@ class AddIncomes extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: hight(context) * .02),
-            _buildTextField(_nameController, "Name", TextInputType.text),
+            _buildTextField(nameController, "Name", TextInputType.text),
             SizedBox(height: hight(context) * .03),
             _buildTextField(
-                _valueController, "Enter Income Value", TextInputType.number),
+                valueController, "Enter Income Value", TextInputType.number),
             SizedBox(height: hight(context) * .03),
             _buildCategoryDropdown(),
             SizedBox(height: hight(context) * .03),
@@ -86,27 +86,21 @@ class AddIncomes extends StatelessWidget {
         ),
         child: ElevatedButton(
           onPressed: () async {
-            print("Add button pressed!");
             if (_validateInputs()) {
-              print("Inputs are valid!");
-              bool added = await controller.addIncome(
-                double.tryParse(_valueController.text) ?? 0.0,
-                controller.selectedCategory.value,
-                _nameController.text,
-                DateTime.now(),
+              Income income = Income(
+                id: 0,
+                name: nameController.text,
+                price: double.parse(valueController.text),
+                category: controller.selectedCategory.value,
+                time: DateTime.now().toString(),
               );
-
-              if (added) {
-                print("Income added successfully!");
-                if (Get.isSnackbarOpen) {
-                  Get.closeCurrentSnackbar();
-                }
-                Get.back();
-              } else {
-                print("Failed to add income.");
+              try {
+                await controller.addIncome(income);
+                await controller.fetchIncomes;
+                Navigator.pop(context);
+              } catch (e) {
+                Get.snackbar('Error', 'Failed to add income');
               }
-            } else {
-              print("Inputs are invalid!");
             }
           },
           style: ElevatedButton.styleFrom(
@@ -124,13 +118,13 @@ class AddIncomes extends StatelessWidget {
   }
 
   bool _validateInputs() {
-    if (_nameController.text.isEmpty ||
-        _valueController.text.isEmpty ||
-        controller.selectedCategory.isEmpty) {
+    if (nameController.text.isEmpty ||
+        valueController.text.isEmpty ||
+        controller.selectedCategory.value.isEmpty) {
       Get.snackbar("Error", "Please fill all fields");
       return false;
     }
-    if (double.tryParse(_valueController.text) == null) {
+    if (double.tryParse(valueController.text) == null) {
       Get.snackbar("Error", "Invalid price value");
       return false;
     }

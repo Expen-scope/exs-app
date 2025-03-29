@@ -1,39 +1,34 @@
 class Income {
-  final String id;
+  final int id;
+  final String name;
   final double price;
   final String category;
-  final String nameOfIncome;
-  final DateTime time;
-  final String userId;
+  final String time;
 
   Income({
     required this.id,
+    required this.name,
     required this.price,
     required this.category,
-    required this.nameOfIncome,
     required this.time,
-    required this.userId,
   });
 
   factory Income.fromJson(Map<String, dynamic> json) {
     return Income(
-      id: json['id']?.toString() ?? '',
-      price: double.tryParse(json['price'].toString()) ?? 0.0,
-      category: json['category']?.toString() ?? '',
-      nameOfIncome: json['name_of_income']?.toString() ?? '',
-      time:
-          json['time'] != null ? DateTime.parse(json['time']) : DateTime.now(),
-      userId: json['user_id']?.toString() ?? '',
+      id: json['id'],
+      name: json['nameinc'],
+      price: json['price'].toDouble(),
+      category: json['category'],
+      time: json['time'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'nameinc': name,
       'price': price,
       'category': category,
-      'name_of_income': nameOfIncome,
-      'time': time.toIso8601String(),
-      'user_id': userId,
+      'time': time,
     };
   }
 }
