@@ -66,8 +66,7 @@ class _AddExpencesState extends State<AddExpences> {
                 "Vehicle",
                 "Others"
               ]
-                  .map((type) =>
-                      DropdownMenuItem(value: type, child: Text(type)))
+                  .map((type) => DropdownMenuItem(value: type, child: Text(type)))
                   .toList(),
               onChanged: (value) {
                 setState(() {
@@ -76,8 +75,8 @@ class _AddExpencesState extends State<AddExpences> {
               },
               decoration: InputDecoration(
                 labelText: "Select Expense Type",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
             ),
             SizedBox(height: hight(context) * .03),
