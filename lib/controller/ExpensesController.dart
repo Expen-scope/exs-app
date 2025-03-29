@@ -46,7 +46,9 @@ class ExpencesController extends GetxController {
         )),
     "Others": ExpenseInfo(
         color: Color(0xff9E9E9EFF),
-        icon: Icon(Icons.category,           color: Color(0xff9E9E9EFF),
+        icon: Icon(
+          Icons.category,
+          color: Color(0xff9E9E9EFF),
         )),
   };
 
@@ -55,7 +57,6 @@ class ExpencesController extends GetxController {
     super.onInit();
     _loadToken();
   }
-
 
   Future<void> _loadToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -96,7 +97,7 @@ class ExpencesController extends GetxController {
         body: json.encode({
           'price': expense.value.toString(),
           'category': expense.type,
-          'name_of_expense':  expense.name,
+          'name_of_expense': expense.name,
           'time': expense.date,
         }),
       );
