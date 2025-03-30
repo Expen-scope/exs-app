@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class IncomesController extends GetxController {
   var incomes = <Income>[].obs;
-  var selectedCategory = 'Salary'.obs;
+  var selectedCategory = 'salary'.obs;
   final String baseUrl = "http://10.0.2.2:8000/api/";
   late String? authToken;
 
@@ -30,7 +30,7 @@ class IncomesController extends GetxController {
   };
 
   List<String> get incomeCategories =>
-      incomeCategoriesData.keys.toList(); // Getter لإرجاع الفئات
+      incomeCategoriesData.keys.toList();
 
   @override
   void onInit() {
@@ -69,6 +69,7 @@ class IncomesController extends GetxController {
     }
   }
 
+// مثال لتحسين دالة addIncome في الـController
   Future<void> addIncome(Income income) async {
     try {
       final response = await http.post(
@@ -82,18 +83,25 @@ class IncomesController extends GetxController {
         }),
       );
 
+      final responseData = json.decode(response.body);
+
       if (response.statusCode == 201) {
-        final newIncome = Income.fromJson(json.decode(response.body)['data']);
+        // Option 1: Add manually + refresh
+        final newIncome = Income.fromJson(responseData['data']);
         incomes.add(newIncome);
-        update();
+        incomes.refresh();
+
+        // Option 2: Reload from server
+        await fetchIncomes();
+
+        Get.snackbar('Success', 'Income added successfully');
       } else {
-        Get.snackbar('Error', 'Failed to add income: ${response.body}');
+        Get.snackbar('Error', responseData['message'] ?? 'Failed to add income');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add income: $e');
+      Get.snackbar('Error', 'Connection failed: $e');
     }
   }
-
   Future<void> deleteIncome(int id) async {
     try {
       final response = await http.delete(

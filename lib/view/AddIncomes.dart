@@ -96,7 +96,7 @@ class AddIncomes extends StatelessWidget {
               );
               try {
                 await controller.addIncome(income);
-                await controller.fetchIncomes;
+                await controller.fetchIncomes();
                 Navigator.pop(context);
               } catch (e) {
                 Get.snackbar('Error', 'Failed to add income');
