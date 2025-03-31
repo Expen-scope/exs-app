@@ -36,33 +36,35 @@ class _AddExpencesState extends State<AddExpences> {
           children: [
             SizedBox(height: hight(context) * .02),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
+              padding:
+                  EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Name",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ),
             SizedBox(height: hight(context) * .02),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
+              padding:
+                  EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: TextField(
                 controller: valueController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Enter Expense Value",
-
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ),
             SizedBox(height: hight(context) * .03),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
+              padding:
+                  EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: DropdownButtonFormField<String>(
                 value: selectedType,
                 items: [
@@ -73,7 +75,8 @@ class _AddExpencesState extends State<AddExpences> {
                   "Vehicle",
                   "Others"
                 ]
-                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .map((type) =>
+                        DropdownMenuItem(value: type, child: Text(type)))
                     .toList(),
                 onChanged: (value) {
                   setState(() {

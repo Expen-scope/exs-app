@@ -61,6 +61,10 @@ class ExpencesController extends GetxController {
   Future<void> _loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('auth_token');
+    if (authToken == null) {
+      Get.offAllNamed('/Login');
+      return;
+    }
     await fetchExpenses();
   }
 
@@ -85,6 +89,7 @@ class ExpencesController extends GetxController {
         Get.snackbar('Error', 'Failed to load expenses');
       }
     } catch (e) {
+      print('Error details: $e');
       Get.snackbar('Error', 'Failed to load expenses');
     }
   }
@@ -104,10 +109,13 @@ class ExpencesController extends GetxController {
 
       if (response.statusCode == 201) {
         await fetchExpenses();
+        print('Updated list: ${listExpenses.length} items');
       } else {
         Get.snackbar('Error', 'Failed to add expense');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Error details: $e');
+      print('Stack trace: $stackTrace');
       Get.snackbar('Error', 'Failed to add expense');
     }
   }
@@ -125,7 +133,8 @@ class ExpencesController extends GetxController {
         Get.snackbar('Error', 'Failed to remove expense');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to remove expense');
+      print('Error details: $e'); // أضف هذا السطر
+      Get.snackbar('Error', 'Failed to load expenses');
     }
   }
 }

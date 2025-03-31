@@ -1,11 +1,12 @@
 import 'dart:math';
+import 'package:abo_najib_2/const/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../const/Drawer.dart';
-import '../controller/FinancialController.dart'; // لأجل التنسيق التاريخ
+import '../controller/FinancialController.dart';
 
 class HomePage extends StatelessWidget {
   final FinancialController controller = Get.put(FinancialController());
@@ -84,7 +85,22 @@ class HomePage extends StatelessWidget {
                 selected: {controller.selectedPeriod.value},
                 onSelectionChanged: (newSelection) {
                   controller.selectedPeriod.value = newSelection.first;
-                  controller.generateFakeData();
+                  final now = DateTime.now();
+                  DateTime startDate;
+                  switch (newSelection.first) {
+                    case 'week':
+                      startDate = now.subtract(Duration(days: now.weekday - 1));
+                      break;
+                    case 'month':
+                      startDate = DateTime(now.year, now.month, 1);
+                      break;
+                    case 'year':
+                      startDate = DateTime(now.year, 1, 1);
+                      break;
+                    default:
+                      startDate = now;
+                  }
+                  controller.setDateRange(startDate, now);
                 },
               )),
         ],
@@ -160,40 +176,76 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildCategoryAnalysisChart() {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text('distribution', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 0.1),
-            SizedBox(
-              height: 225,
-              child: Obx(() => PieChart(
-                    PieChartData(
-                      pieTouchData: PieTouchData(),
-                      sectionsSpace: 2,
-                      centerSpaceRadius: 50,
-                      sections: controller.fakeFinancialData.map((data) {
-                        return PieChartSectionData(
-                          color: data['color'],
-                          value: data['amount'],
-                          title:
-                              '${(data['amount'] / controller.totalExpenses.value * 100).toStringAsFixed(1)}%',
-                          radius: 30,
-                          titleStyle:
-                              TextStyle(color: Colors.white, fontSize: 12),
-                        );
-                      }).toList(),
-                    ),
-                  )),
-            ),
-          ],
+    return Obx(() {
+      if (controller.categoryAnalysis.isEmpty) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text('No data available', style: TextStyle(color: Colors.grey)),
+          ),
+        );
+      }
+
+      return Card(
+        elevation: 3,
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text('Income & Expense Distribution',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 0.1),
+              SizedBox(
+                height: 300,
+                child: PieChart(
+                  PieChartData(
+                    sectionsSpace: 0,
+                    centerSpaceRadius: 40,
+                    sections: controller.categoryAnalysis.map((data) {
+                      return PieChartSectionData(
+                        color: data['color'],
+                        value: data['amount'],
+                        title: '${data['percentage']}%',
+                        radius: 25,
+                        titleStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              _buildLegend(),
+            ],
+          ),
         ),
-      ),
+      );
+    });
+  }
+
+  Widget _buildLegend() {
+    return Wrap(
+      spacing: 10,
+      children: controller.categoryAnalysis.map((data) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              color: data['color'],
+            ),
+            SizedBox(width: 5),
+            Text(data['category']),
+          ],
+        );
+      }).toList(),
     );
   }
+
 
   Widget _buildTrendAnalysisChart() {
     return Card(
@@ -263,26 +315,26 @@ class HomePage extends StatelessWidget {
             Text('', style: TextStyle(fontSize: 18)),
             SizedBox(height: 0.1),
             SizedBox(
-              height: 150, // تم تصغير الارتفاع هنا
+              height: 150,
               child: Obx(() => RadialPercentChart(
-                    progress: (controller.totalExpenses.value /
-                            controller.totalIncome.value) *
-                        100,
-                    progressColor: Colors.blue,
-                    fillColor: Colors.grey[200]!,
-                    lineWidth: 8, // تم تصغير سمك الخط هنا
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Exchange ratio'),
-                        Text(
-                          '${(controller.totalExpenses.value / controller.totalIncome.value * 100).toStringAsFixed(1)}%',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                progress: controller.totalIncome.value == 0
+                    ? 0
+                    : (controller.totalExpenses.value / controller.totalIncome.value) * 100,
+                progressColor: Colors.blue,
+                fillColor: Colors.grey[200]!,
+                lineWidth: 8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Exchange ratio'),
+                    Text(
+                      '${controller.totalIncome.value == 0 ? 0 : (controller.totalExpenses.value / controller.totalIncome.value * 100).toStringAsFixed(1)}%',
+                      style: TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                  )),
+                  ],
+                ),
+              )),
             ),
           ],
         ),
@@ -291,21 +343,27 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildTransactionSection() {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Card(
-        elevation: 3,
-        child: Padding(
+    return Obx(() {
+      print("${controller.transactions}SS");
+      if (controller.transactions.isEmpty) {
+        return SizedBox.shrink();
+      }
+
+      return Padding(
           padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Latest transactions', style: TextStyle(fontSize: 18)),
-              SizedBox(height: 10),
-              Obx(() => SizedBox(
-                    height: 210, // ارتفاع مناسب لعرض 3 عناصر تقريبًا
-                    child: ListView.builder(
+          child: Card(
+            elevation: 3,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text('Latest transactions', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 210,
+                    child: ListView.separated(
                       itemCount: controller.transactions.length,
+                      separatorBuilder: (context, index) => Divider(height: 1),
                       itemBuilder: (context, index) {
                         final transaction = controller.transactions[index];
                         return ListTile(
@@ -323,12 +381,12 @@ class HomePage extends StatelessWidget {
                         );
                       },
                     ),
-                  )),
-            ],
-          ),
-        ),
-      ),
-    );
+                  ),
+                ],
+              ),
+            ),
+          ));
+    });
   }
 }
 

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class IncomesController extends GetxController {
   var incomes = <Income>[].obs;
-  var selectedCategory = 'salary'.obs;
+  var selectedCategory = 'Salary'.obs;
   final String baseUrl = "http://10.0.2.2:8000/api/";
   late String? authToken;
 
@@ -29,8 +29,7 @@ class IncomesController extends GetxController {
         icon: Icon(Icons.category, color: Color(0xff9E9E9EFF))),
   };
 
-  List<String> get incomeCategories =>
-      incomeCategoriesData.keys.toList();
+  List<String> get incomeCategories => incomeCategoriesData.keys.toList();
 
   @override
   void onInit() {
@@ -59,17 +58,22 @@ class IncomesController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body)['data'] as List;
+        final responseData = json.decode(response.body);
+        final List<dynamic> data = responseData['data'];
+
         incomes.value = data.map((e) => Income.fromJson(e)).toList();
+        incomes.refresh();
+
+        print('Successfully loaded ${incomes.length} incomes');
       } else {
-        Get.snackbar('Error', 'Failed to load incomes: ${response.body}');
+        Get.snackbar('Error', 'Failed to load incomes');
       }
     } catch (e) {
+      print('Fetch error: $e');
       Get.snackbar('Error', 'Failed to load incomes: $e');
     }
   }
 
-// مثال لتحسين دالة addIncome في الـController
   Future<void> addIncome(Income income) async {
     try {
       final response = await http.post(
@@ -86,22 +90,23 @@ class IncomesController extends GetxController {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 201) {
-        // Option 1: Add manually + refresh
         final newIncome = Income.fromJson(responseData['data']);
         incomes.add(newIncome);
         incomes.refresh();
 
-        // Option 2: Reload from server
+        Get.back();
         await fetchIncomes();
 
         Get.snackbar('Success', 'Income added successfully');
       } else {
-        Get.snackbar('Error', responseData['message'] ?? 'Failed to add income');
+        Get.snackbar(
+            'Error', responseData['message'] ?? 'Failed to add income');
       }
     } catch (e) {
       Get.snackbar('Error', 'Connection failed: $e');
     }
   }
+
   Future<void> deleteIncome(int id) async {
     try {
       final response = await http.delete(
