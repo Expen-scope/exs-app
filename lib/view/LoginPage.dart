@@ -20,7 +20,7 @@ class LoginPage extends GetView<LoginController> {
         child: Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
           child: Form(
-            key: controller.formKey, // تأكد من استخدام نفس المفتاح
+            key: controller.formKey,
             child: ListView(
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.12),

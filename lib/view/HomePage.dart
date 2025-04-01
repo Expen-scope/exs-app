@@ -10,11 +10,13 @@ import '../controller/FinancialController.dart';
 
 class HomePage extends StatelessWidget {
   final FinancialController controller = Get.put(FinancialController());
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
+      key: _scaffoldKey,
       drawer: CustomDrawer(),
       body: Obx(() {
         return controller.isLoading.value
@@ -36,6 +38,12 @@ class HomePage extends StatelessWidget {
 
   AppBar _buildAppBar() {
     return AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.menu, color: Colors.white),
+        onPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
+      ),
       title: Text('ABO NAJIB',
           style: TextStyle(
               color: Colors.white,
@@ -175,14 +183,38 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildEmptyState({required IconData icon, required String message}) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Card(
+        elevation: 5,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 50, color: Colors.grey),
+              SizedBox(height: 16),
+              Text(
+                message,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCategoryAnalysisChart() {
     return Obx(() {
       if (controller.categoryAnalysis.isEmpty) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text('No data available', style: TextStyle(color: Colors.grey)),
-          ),
+        return _buildEmptyState(
+          icon: Icons.pie_chart_outline,
+          message: 'No financial data available',
         );
       }
 
@@ -210,8 +242,7 @@ class HomePage extends StatelessWidget {
                         titleStyle: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
-                            fontWeight: FontWeight.bold
-                        ),
+                            fontWeight: FontWeight.bold),
                       );
                     }).toList(),
                   ),
@@ -246,63 +277,75 @@ class HomePage extends StatelessWidget {
     );
   }
 
-
   Widget _buildTrendAnalysisChart() {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text('Monthly trends', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            SizedBox(
-              height: 350,
-              child: Obx(() => LineChart(
-                    LineChartData(
-                      lineTouchData: LineTouchData(enabled: true),
-                      gridData: FlGridData(show: true),
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              return Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: Text(controller
-                                    .monthlyTrends[value.toInt()]['month']),
-                              );
-                            },
+    return Obx(() {
+      if (controller.monthlyTrends.isEmpty) {
+        return _buildEmptyState(
+          icon: Icons.trending_up,
+          message: 'No trend data available',
+        );
+      }
+      return Card(
+          elevation: 3,
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text('Monthly trends', style: TextStyle(fontSize: 18)),
+                SizedBox(height: 20),
+                SizedBox(
+                  height: 350,
+                  child: Obx(() => LineChart(
+                        LineChartData(
+                          lineTouchData: LineTouchData(enabled: true),
+                          gridData: FlGridData(show: true),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(top: 8),
+                                    child: Text(controller
+                                        .monthlyTrends[value.toInt()]['month']),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: controller.monthlyTrends
+                                  .asMap()
+                                  .entries
+                                  .map((e) {
+                                return FlSpot(
+                                    e.key.toDouble(), e.value['income']);
+                              }).toList(),
+                              color: Colors.green,
+                              isCurved: true,
+                              barWidth: 4,
+                            ),
+                            LineChartBarData(
+                              spots: controller.monthlyTrends
+                                  .asMap()
+                                  .entries
+                                  .map((e) {
+                                return FlSpot(
+                                    e.key.toDouble(), e.value['expense']);
+                              }).toList(),
+                              color: Colors.red,
+                              isCurved: true,
+                              barWidth: 4,
+                            ),
+                          ],
                         ),
-                      ),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots:
-                              controller.monthlyTrends.asMap().entries.map((e) {
-                            return FlSpot(e.key.toDouble(), e.value['income']);
-                          }).toList(),
-                          color: Colors.green,
-                          isCurved: true,
-                          barWidth: 4,
-                        ),
-                        LineChartBarData(
-                          spots:
-                              controller.monthlyTrends.asMap().entries.map((e) {
-                            return FlSpot(e.key.toDouble(), e.value['expense']);
-                          }).toList(),
-                          color: Colors.red,
-                          isCurved: true,
-                          barWidth: 4,
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ));
+    });
   }
 
   Widget _buildBudgetProgressChart() {
@@ -317,24 +360,26 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: 150,
               child: Obx(() => RadialPercentChart(
-                progress: controller.totalIncome.value == 0
-                    ? 0
-                    : (controller.totalExpenses.value / controller.totalIncome.value) * 100,
-                progressColor: Colors.blue,
-                fillColor: Colors.grey[200]!,
-                lineWidth: 8,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Exchange ratio'),
-                    Text(
-                      '${controller.totalIncome.value == 0 ? 0 : (controller.totalExpenses.value / controller.totalIncome.value * 100).toStringAsFixed(1)}%',
-                      style: TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                    progress: controller.totalIncome.value == 0
+                        ? 0
+                        : (controller.totalExpenses.value /
+                                controller.totalIncome.value) *
+                            100,
+                    progressColor: Colors.blue,
+                    fillColor: Colors.grey[200]!,
+                    lineWidth: 8,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Exchange ratio'),
+                        Text(
+                          '${controller.totalIncome.value == 0 ? 0 : (controller.totalExpenses.value / controller.totalIncome.value * 100).toStringAsFixed(1)}%',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  )),
             ),
           ],
         ),
@@ -344,9 +389,11 @@ class HomePage extends StatelessWidget {
 
   Widget _buildTransactionSection() {
     return Obx(() {
-      print("${controller.transactions}SS");
       if (controller.transactions.isEmpty) {
-        return SizedBox.shrink();
+        return _buildEmptyState(
+          icon: Icons.receipt,
+          message: 'No transactions recorded',
+        );
       }
 
       return Padding(

@@ -14,8 +14,6 @@ class FinancialController extends GetxController {
   final ExpencesController expensesController = Get.find();
   var categoryAnalysis = <Map<String, dynamic>>[].obs;
 
-
-
   void calculateCategoryAnalysis() {
     Map<String, double> combinedData = {};
     for (var income in incomesController.incomes) {
@@ -35,10 +33,12 @@ class FinancialController extends GetxController {
         "category": entry.key,
         "amount": entry.value.abs(),
         "percentage": (entry.value.abs() / total * 100).toStringAsFixed(1),
-        "color": entry.value >= 0 ? Colors.green : Colors.red, // اللون حسب النوع
+        "color":
+            entry.value >= 0 ? Colors.green : Colors.red, // اللون حسب النوع
       };
     }).toList();
   }
+
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpenses = 0.0.obs;
   final RxDouble balance = 0.0.obs;
@@ -153,22 +153,24 @@ class FinancialController extends GetxController {
     for (final income in filteredIncomes) {
       categoryMap.update(
         income.category,
-            (value) => value + income.price,
+        (value) => value + income.price,
         ifAbsent: () => income.price,
       );
     }
 
     // جمع المصاريف
-    final filteredExpenses = _filterByDateRange(expensesController.listExpenses);
+    final filteredExpenses =
+        _filterByDateRange(expensesController.listExpenses);
     for (final expense in filteredExpenses) {
       categoryMap.update(
         expense.type,
-            (value) => value - expense.value,
+        (value) => value - expense.value,
         ifAbsent: () => -expense.value,
       );
     }
 
-    final total = categoryMap.values.fold<double>(0, (sum, value) => sum + value.abs());
+    final total =
+        categoryMap.values.fold<double>(0, (sum, value) => sum + value.abs());
 
     categoryAnalysis.assignAll(categoryMap.entries.map((e) {
       final isIncome = e.value >= 0;
@@ -187,7 +189,9 @@ class FinancialController extends GetxController {
         'amount': e.value.abs(),
         'color': isIncome ? Colors.green : Colors.red,
         'icon': categoryInfo.icon,
-        'percentage': total == 0 ? '0.0' : ((e.value.abs() / total) * 100).toStringAsFixed(1),
+        'percentage': total == 0
+            ? '0.0'
+            : ((e.value.abs() / total) * 100).toStringAsFixed(1),
       };
     }).toList());
   }
