@@ -93,7 +93,7 @@ class FinancialController extends GetxController {
       _processMonthlyTrends();
       _processTransactions();
       _calculateBalance();
-      update(); // إضافة تحديث صريح للـ controller
+      update();
     } catch (e) {
       errorMessage.value = 'Error processing data: $e';
       Get.snackbar('Error', errorMessage.value);
@@ -116,9 +116,9 @@ class FinancialController extends GetxController {
   }
 
   List<T> _filterByDateRange<T>(List<T> items) {
-    if (startDate.value == null && endDate.value == null) return items;
+    if (startDate.value == null || endDate.value == null) return items;
 
-    final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
     return items.where((item) {
       String dateString;
@@ -132,14 +132,14 @@ class FinancialController extends GetxController {
 
       try {
         final itemDate = dateFormat.parse(dateString);
-        final isAfterStart =
-            startDate.value == null || itemDate.isAfter(startDate.value!);
-        final isBeforeEnd = endDate.value == null ||
-            itemDate.isBefore(endDate.value!.add(Duration(days: 1)));
 
-        return isAfterStart && isBeforeEnd;
+        final bool isWithinRange = !itemDate.isBefore(startDate.value!) &&
+            !itemDate.isAfter(endDate.value!);
+
+        return isWithinRange;
       } catch (e) {
-        print('Error parsing date: $dateString');
+        print(
+            'Error parsing date for ${item.runtimeType}: $dateString. Error: $e');
         return false;
       }
     }).toList();
@@ -197,21 +197,13 @@ class FinancialController extends GetxController {
   }
 
   void _processMonthlyTrends() {
-    final monthlyMap = <String, Map<String, double>>{};
+    final periodMap = <String, Map<String, double>>{};
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    DateTime _parsePeriodToDate(String period) {
-      if (selectedPeriod.value == 'week') {
-        return DateFormat('dd/MM').parse(period.split(' ')[1]);
-      } else if (selectedPeriod.value == 'month') {
-        return DateFormat('MMM y').parse(period);
-      }
-      return DateFormat('y').parse(period);
-    }
 
     final filteredIncomes = _filterByDateRange(incomesController.incomes);
     final filteredExpenses =
         _filterByDateRange(expensesController.listExpenses);
-    final periodMap = <String, Map<String, double>>{};
+
     String groupByKey(DateTime date) {
       if (selectedPeriod.value == 'week') {
         final startOfWeek = date.subtract(Duration(days: date.weekday - 1));
@@ -226,11 +218,11 @@ class FinancialController extends GetxController {
     for (final income in filteredIncomes) {
       try {
         final date = dateFormat.parse(income.time);
-        final monthKey = DateFormat('MMM y').format(date);
+        final key = groupByKey(date);
 
-        monthlyMap.putIfAbsent(monthKey, () => {'income': 0.0, 'expense': 0.0});
-        monthlyMap[monthKey]!['income'] =
-            (monthlyMap[monthKey]!['income'] ?? 0.0) + income.price;
+        periodMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
+        periodMap[key]!['income'] =
+            (periodMap[key]!['income'] ?? 0.0) + income.price;
       } catch (e) {
         print('Error processing income date: ${income.time}');
       }
@@ -239,30 +231,49 @@ class FinancialController extends GetxController {
     for (final expense in filteredExpenses) {
       try {
         final date = dateFormat.parse(expense.date);
-        final monthKey = DateFormat('MMM y').format(date);
-        monthlyMap.putIfAbsent(monthKey, () => {'income': 0.0, 'expense': 0.0});
-        monthlyMap[monthKey]!['expense'] =
-            (monthlyMap[monthKey]!['expense'] ?? 0.0) + expense.value;
+        final key = groupByKey(date);
+
+        periodMap.putIfAbsent(key, () => {'income': 0.0, 'expense': 0.0});
+        periodMap[key]!['expense'] =
+            (periodMap[key]!['expense'] ?? 0.0) + expense.value;
       } catch (e) {
         print('Error processing expense date: ${expense.date}');
       }
     }
 
-    monthlyTrends.assignAll(monthlyMap.entries
-        .map((e) => {
-              'month': e.key,
-              'income': e.value['income']!,
-              'expense': e.value['expense']!,
-              'balance': e.value['income']! - e.value['expense']!,
-            })
-        .toList()
-      ..sort((a, b) {
-        final aMonth = a['month'] as String;
-        final bMonth = b['month'] as String;
-        return DateFormat('MMM y')
-            .parse(aMonth)
-            .compareTo(DateFormat('MMM y').parse(bMonth));
-      }));
+    List<Map<String, dynamic>> sortedEntries = [];
+    periodMap.forEach((key, value) {
+      DateTime sortDate;
+      try {
+        if (selectedPeriod.value == 'week') {
+          final dateString = key.split(' ')[1]; // الحصول على تاريخ الأسبوع
+          sortDate = DateFormat('dd/MM').parse(dateString);
+        } else if (selectedPeriod.value == 'month') {
+          sortDate = DateFormat('MMM y').parse(key);
+        } else {
+          sortDate = DateFormat('y').parse(key);
+        }
+      } catch (e) {
+        sortDate = DateTime.now();
+      }
+
+      sortedEntries.add({
+        'key': key,
+        'sortDate': sortDate,
+        'income': value['income']!,
+        'expense': value['expense']!,
+        'balance': value['income']! - value['expense']!,
+      });
+    });
+
+    sortedEntries.sort((a, b) => a['sortDate'].compareTo(b['sortDate']));
+
+    monthlyTrends.assignAll(sortedEntries.map((e) => {
+          'month': e['key'],
+          'income': e['income'],
+          'expense': e['expense'],
+          'balance': e['balance'],
+        }));
   }
 
   void _processTransactions() {
@@ -330,23 +341,29 @@ class FinancialController extends GetxController {
 
   void setPeriod(String period) {
     final now = DateTime.now();
-    DateTime startDate;
+    DateTime start;
+    DateTime end;
 
     switch (period) {
       case 'week':
-        startDate = now.subtract(Duration(days: now.weekday - 1));
+        start = DateTime(now.year, now.month, now.day)
+            .subtract(Duration(days: now.weekday - 1));
+        end = start.add(Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
         break;
       case 'month':
-        startDate = DateTime(now.year, now.month, 1);
+        start = DateTime(now.year, now.month, 1);
+        end = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
         break;
       case 'year':
-        startDate = DateTime(now.year, 1, 1);
+        start = DateTime(now.year, 1, 1);
+        end = DateTime(now.year, 12, 31, 23, 59, 59);
         break;
       default:
-        startDate = now;
+        start = now;
+        end = now;
     }
-
-    setDateRange(startDate, now);
+    selectedPeriod.value = period;
+    setDateRange(start, end);
   }
 
   void setDateRange(DateTime? start, DateTime? end) {

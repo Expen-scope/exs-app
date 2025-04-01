@@ -285,66 +285,76 @@ class HomePage extends StatelessWidget {
           message: 'No trend data available',
         );
       }
+
       return Card(
-          elevation: 3,
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Text('Monthly trends', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 350,
-                  child: Obx(() => LineChart(
-                        LineChartData(
-                          lineTouchData: LineTouchData(enabled: true),
-                          gridData: FlGridData(show: true),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(top: 8),
-                                    child: Text(controller
-                                        .monthlyTrends[value.toInt()]['month']),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: controller.monthlyTrends
-                                  .asMap()
-                                  .entries
-                                  .map((e) {
-                                return FlSpot(
-                                    e.key.toDouble(), e.value['income']);
-                              }).toList(),
-                              color: Colors.green,
-                              isCurved: true,
-                              barWidth: 4,
-                            ),
-                            LineChartBarData(
-                              spots: controller.monthlyTrends
-                                  .asMap()
-                                  .entries
-                                  .map((e) {
-                                return FlSpot(
-                                    e.key.toDouble(), e.value['expense']);
-                              }).toList(),
-                              color: Colors.red,
-                              isCurved: true,
-                              barWidth: 4,
-                            ),
-                          ],
+        elevation: 3,
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text('Trend Analysis', style: TextStyle(fontSize: 18)),
+              SizedBox(height: 20),
+              SizedBox(
+                height: 350,
+                child: LineChart(
+                  LineChartData(
+                    lineTouchData: LineTouchData(enabled: true),
+                    gridData: FlGridData(show: true),
+                    titlesData: FlTitlesData(
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 1,
+                          getTitlesWidget: (value, meta) {
+                            if (value >= controller.monthlyTrends.length)
+                              return Container();
+                            final periodKey = controller
+                                .monthlyTrends[value.toInt()]['month'];
+                            String label;
+                            if (controller.selectedPeriod.value == 'week') {
+                              label = periodKey.split(' ')[1]; // تاريخ الأسبوع
+                            } else if (controller.selectedPeriod.value ==
+                                'month') {
+                              label = periodKey.split(' ')[0]; // الشهر
+                            } else {
+                              label = periodKey; // السنة
+                            }
+                            return Text(label, style: TextStyle(fontSize: 10));
+                          },
                         ),
-                      )),
+                      ),
+                    ),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: controller.monthlyTrends
+                            .asMap()
+                            .entries
+                            .map((e) =>
+                                FlSpot(e.key.toDouble(), e.value['income']))
+                            .toList(),
+                        color: Colors.green,
+                        isCurved: true,
+                        barWidth: 4,
+                      ),
+                      LineChartBarData(
+                        spots: controller.monthlyTrends
+                            .asMap()
+                            .entries
+                            .map((e) =>
+                                FlSpot(e.key.toDouble(), e.value['expense']))
+                            .toList(),
+                        color: Colors.red,
+                        isCurved: true,
+                        barWidth: 4,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ));
+              ),
+            ],
+          ),
+        ),
+      );
     });
   }
 
