@@ -90,7 +90,7 @@ class GoalController extends GetxController {
   Future<bool> updateGoal(int id, GoalModel goal) async {
     try {
       final response = await http.put(
-        Uri.parse('${_apiUrl}updategoal/$id'), // استخدام الـ id الصحيح هنا
+        Uri.parse('${_apiUrl}updategoal/$id'),
         headers: _headers,
         body: json.encode({
           'name': goal.name,

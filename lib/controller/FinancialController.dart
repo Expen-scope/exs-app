@@ -33,8 +33,7 @@ class FinancialController extends GetxController {
         "category": entry.key,
         "amount": entry.value.abs(),
         "percentage": (entry.value.abs() / total * 100).toStringAsFixed(1),
-        "color":
-            entry.value >= 0 ? Colors.green : Colors.red, // اللون حسب النوع
+        "color": entry.value >= 0 ? Colors.green : Colors.red,
       };
     }).toList();
   }
@@ -148,7 +147,6 @@ class FinancialController extends GetxController {
   void _processCategoryAnalysis() {
     final categoryMap = <String, double>{};
 
-    // جمع المداخيل
     final filteredIncomes = _filterByDateRange(incomesController.incomes);
     for (final income in filteredIncomes) {
       categoryMap.update(
@@ -158,7 +156,6 @@ class FinancialController extends GetxController {
       );
     }
 
-    // جمع المصاريف
     final filteredExpenses =
         _filterByDateRange(expensesController.listExpenses);
     for (final expense in filteredExpenses) {
@@ -246,7 +243,7 @@ class FinancialController extends GetxController {
       DateTime sortDate;
       try {
         if (selectedPeriod.value == 'week') {
-          final dateString = key.split(' ')[1]; // الحصول على تاريخ الأسبوع
+          final dateString = key.split(' ')[1];
           sortDate = DateFormat('dd/MM').parse(dateString);
         } else if (selectedPeriod.value == 'month') {
           sortDate = DateFormat('MMM y').parse(key);

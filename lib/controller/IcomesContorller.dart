@@ -13,20 +13,35 @@ class IncomesController extends GetxController {
 
   final Map<String, IncomeInfo> incomeCategoriesData = {
     "Salary": IncomeInfo(
-        color: Color(0xff2196F3FF),
-        icon: Icon(Icons.work, color: Color(0xff2196F3FF))),
+        color: Color(0xff167dfe),
+        icon: Icon(
+          Icons.work,
+          color: Color(0xff167dfe),
+        )),
     "Bonus": IncomeInfo(
-        color: Color(0xff4CAF50FF),
-        icon: Icon(Icons.card_giftcard, color: Color(0xff4CAF50FF))),
+        color: Color(0xffd615ff),
+        icon: Icon(
+          Icons.card_giftcard,
+          color: Color(0xffd615ff),
+        )),
     "Investment": IncomeInfo(
-        color: Color(0xffFF9800FF),
-        icon: Icon(Icons.trending_up, color: Color(0xffFF9800FF))),
+        color: Color(0xfffa5f48),
+        icon: Icon(
+          Icons.trending_up,
+          color: Color(0xfffa5f48),
+        )),
     "Freelance": IncomeInfo(
-        color: Color(0xff9C27B0FF),
-        icon: Icon(Icons.computer, color: Color(0xff9C27B0FF))),
+        color: Color(0xff6ed4a5),
+        icon: Icon(
+          Icons.computer,
+          color: Color(0xff6ed4a5),
+        )),
     "Other": IncomeInfo(
-        color: Color(0xff9E9E9EFF),
-        icon: Icon(Icons.category, color: Color(0xff9E9E9EFF))),
+        color: Color(0xfff8b107),
+        icon: Icon(
+          Icons.category,
+          color: Color(0xfff8b107),
+        )),
   };
 
   List<String> get incomeCategories => incomeCategoriesData.keys.toList();

@@ -18,18 +18,19 @@ class AddIncomes extends StatelessWidget {
     return Scaffold(
       appBar: Appbarofpage(TextPage: "Add Incomes"),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: hight(context) * .028),
+        // padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(hight(context) * .019),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: hight(context) * .02),
+            SizedBox(height: hight(context) * 0.024),
             _buildTextField(nameController, "Name", TextInputType.text),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context) * 0.024),
             _buildTextField(
                 valueController, "Enter Income Value", TextInputType.number),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context) * 0.024),
             _buildCategoryDropdown(),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context) * 0.034),
             _buildAddButton(context),
           ],
         ),
@@ -46,7 +47,14 @@ class AddIncomes extends StatelessWidget {
           keyboardType: type,
           decoration: InputDecoration(
             labelText: label,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+            ),
           ),
         ));
   }
@@ -56,6 +64,7 @@ class AddIncomes extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
       child: Obx(() => DropdownButtonFormField<String>(
             value: controller.selectedCategory.value,
+            dropdownColor: Colors.white,
             items: controller.incomeCategories
                 .map((category) => DropdownMenuItem(
                       value: category,
@@ -65,8 +74,14 @@ class AddIncomes extends StatelessWidget {
             onChanged: (value) => controller.selectedCategory.value = value!,
             decoration: InputDecoration(
               labelText: "Select Category",
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+              ),
             ),
           )),
     );

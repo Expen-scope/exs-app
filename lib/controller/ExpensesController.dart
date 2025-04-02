@@ -21,34 +21,40 @@ class ExpencesController extends GetxController {
 
   final Map<String, ExpenseInfo> expenseData = {
     "Food & Drinks": ExpenseInfo(
-        color: Color(0xff2196F3FF),
-        icon: Icon(Icons.fastfood, color: Color(0xff2196F3FF))),
+        color: Color(0xffaa52ea),
+        icon: Icon(
+          Icons.fastfood,
+          color: Color(0xffaa52ea),
+        )),
     "Shopping": ExpenseInfo(
-        color: Color(0xff9C27B0FF),
-        icon: Icon(Icons.shopping_cart, color: Color(0xff9C27B0FF))),
+        color: Color(0xff75c79f),
+        icon: Icon(
+          Icons.shopping_cart,
+          color: Color(0xff75c79f),
+        )),
     "Housing": ExpenseInfo(
-        color: Color(0xffFF9800FF),
+        color: Color(0xfffb4b41),
         icon: Icon(
           Icons.home,
-          color: Color(0xffFF9800FF),
+          color: Color(0xfffb4b41),
         )),
     "Transportation": ExpenseInfo(
-        color: Color(0xff4CAF50FF),
+        color: Color(0xff4c62f0),
         icon: Icon(
           Icons.directions_bus,
-          color: Color(0xff4CAF50FF),
+          color: Color(0xff4c62f0),
         )),
     "Vehicle": ExpenseInfo(
-        color: Color(0xffF44336FF),
+        color: Color(0xffbcbf7d),
         icon: Icon(
           Icons.directions_car,
-          color: Color(0xff9E9E9EFF),
+          color: Color(0xffbcbf7d),
         )),
     "Others": ExpenseInfo(
-        color: Color(0xff9E9E9EFF),
+        color: Color(0xff61bbdb),
         icon: Icon(
           Icons.category,
-          color: Color(0xff9E9E9EFF),
+          color: Color(0xff61bbdb),
         )),
   };
 

@@ -30,11 +30,11 @@ class _AddExpencesState extends State<AddExpences> {
     return Scaffold(
       appBar: Appbarofpage(TextPage: "Add Expences"),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.all(hight(context) * .019),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: hight(context) * .02),
+            SizedBox(height: hight(context) * 0.025),
             Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
@@ -42,12 +42,18 @@ class _AddExpencesState extends State<AddExpences> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Name",
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .02),
+            SizedBox(height: hight(context) * 0.024),
             Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
@@ -56,16 +62,23 @@ class _AddExpencesState extends State<AddExpences> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Enter Expense Value",
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context) * 0.024),
             Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: DropdownButtonFormField<String>(
+                dropdownColor: Colors.white,
                 value: selectedType,
                 items: [
                   "Food & Drinks",
@@ -85,12 +98,18 @@ class _AddExpencesState extends State<AddExpences> {
                 },
                 decoration: InputDecoration(
                   labelText: "Select Expense Type",
+                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: hight(context) * .03),
+            SizedBox(height: hight(context) * 0.034),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: hight(context) * .1),
               child: ElevatedButton(

@@ -71,7 +71,6 @@ class ExpencesScreens extends StatelessWidget {
                     final expenseInfo = controller.expenseData[expense.type];
 
                     return Card(
-                      // key: ValueKey(expense.id),
                       elevation: 5,
                       color: Colors.grey[200],
                       margin: const EdgeInsets.symmetric(

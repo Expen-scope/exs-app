@@ -38,18 +38,15 @@ class LoginController extends GetxController {
         },
       );
 
-      // 3. التحقق من هيكل البيانات
       if (response.data['authorisation']?['token'] == null) {
         throw Exception('Token not found');
       }
 
-      // 4. استخدام UserModel بشكل صحيح
       final user = UserModel.fromJson(response.data);
       await _saveAuthData(user);
 
       _showSuccessDialog();
     } on DioException catch (e) {
-      // 5. معالجة مفصلة لأخطاء Dio
       _handleDioError(e);
     } catch (e) {
       _handleGenericError(e);
@@ -72,13 +69,13 @@ class LoginController extends GetxController {
 
   void _handleDioError(DioException e) {
     final errorMessage =
-        e.response?.data?['message'] ?? e.message ?? 'فشل تسجيل الدخول';
+        e.response?.data?['message'] ?? e.message ?? 'login failed';
 
     Get.dialog(
       AlertDialog(
-        title: const Text("خطأ", style: TextStyle(color: Colors.red)),
+        title: const Text("Erorr", style: TextStyle(color: Colors.red)),
         content: Text(_parseDioError(e)),
-        actions: [TextButton(onPressed: Get.back, child: const Text("موافق"))],
+        actions: [TextButton(onPressed: Get.back, child: const Text("OK"))],
       ),
     );
   }
@@ -86,22 +83,22 @@ class LoginController extends GetxController {
   String _parseDioError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
-        return 'انتهى وقت الاتصال';
+        return 'The connection time has expired';
       case DioExceptionType.badResponse:
-        return e.response?.data?['message'] ?? 'خطأ في بيانات الاعتماد';
+        return e.response?.data?['message'] ?? 'Credentials error';
       case DioExceptionType.unknown:
-        return 'خطأ في الاتصال بالخادم';
+        return 'Server connection error';
       default:
-        return 'خطأ غير متوقع';
+        return 'Unexpected error';
     }
   }
 
   void _handleGenericError(dynamic e) {
     Get.dialog(
       AlertDialog(
-        title: const Text("خطأ"),
+        title: const Text("Erorr"),
         content: Text(e.toString()),
-        actions: [TextButton(onPressed: Get.back, child: const Text("موافق"))],
+        actions: [TextButton(onPressed: Get.back, child: const Text("OK"))],
       ),
     );
   }
@@ -109,12 +106,12 @@ class LoginController extends GetxController {
   void _showSuccessDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text("نجاح", style: TextStyle(color: Colors.green)),
-        content: const Text("تم تسجيل الدخول بنجاح"),
+        title: const Text("success", style: TextStyle(color: Colors.green)),
+        content: const Text("You have been logged in successfully"),
         actions: [
           TextButton(
             onPressed: () => Get.offAllNamed('/HomePage'),
-            child: const Text("موافق"),
+            child: const Text("OK"),
           ),
         ],
       ),

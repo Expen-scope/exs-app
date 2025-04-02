@@ -114,79 +114,106 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Scaffold(
       appBar: Appbarofpage(TextPage: "Add Goal"),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(hight(context) * .019),
         child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: hight(context) * 0.025),
-              TextField(
-                cursorColor: Color(0xFF264653),
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: "Goal Name",
-                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
-                  ),
-                ),
-              ),
-              SizedBox(height: hight(context) * 0.024),
-              TextField(
-                cursorColor: Color(0xFF264653),
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Target Amount",
-                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: hight(Get.context!) * .007),
+                child: TextField(
+                  cursorColor: Color(0xFF264653),
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: "Goal Name",
+                    labelStyle:
+                        TextStyle(color: Color(0xFF264653), fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF264653), width: 2),
+                    ),
                   ),
                 ),
               ),
               SizedBox(height: hight(context) * 0.024),
-              TextField(
-                cursorColor: Color(0xFF264653),
-                controller: collectedController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Amount collected",
-                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: hight(Get.context!) * .007),
+                child: TextField(
+                  cursorColor: Color(0xFF264653),
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Target Amount",
+                    labelStyle:
+                        TextStyle(color: Color(0xFF264653), fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF264653), width: 2),
+                    ),
                   ),
                 ),
               ),
               SizedBox(height: hight(context) * 0.024),
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                items: categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (value) => setState(() => selectedCategory = value!),
-                decoration: InputDecoration(
-                  labelText: "Category",
-                  labelStyle: TextStyle(color: Color(0xFF264653), fontSize: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: hight(Get.context!) * .007),
+                child: TextField(
+                  cursorColor: Color(0xFF264653),
+                  controller: collectedController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Amount collected",
+                    labelStyle:
+                        TextStyle(color: Color(0xFF264653), fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF264653), width: 2),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                ),
+              ),
+              SizedBox(height: hight(context) * 0.024),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: hight(Get.context!) * .007),
+                child: DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  dropdownColor: Colors.white,
+                  items: categories.map((category) {
+                    return DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (value) =>
+                      setState(() => selectedCategory = value!),
+                  decoration: InputDecoration(
+                    labelText: "Category",
+                    labelStyle:
+                        TextStyle(color: Color(0xFF264653), fontSize: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Color(0xFF264653), width: 2),
+                    ),
                   ),
                 ),
               ),

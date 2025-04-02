@@ -21,29 +21,29 @@ class RegisterController extends GetxController {
   ));
 
   void validateInputs() {
-    nameError.value = name.value.isEmpty ? "يجب إدخال الاسم" : null;
+    nameError.value = name.value.isEmpty ? "You must enter the name" : null;
 
     if (email.value.isEmpty) {
-      emailError.value = "يجب إدخال البريد الإلكتروني";
+      emailError.value = "You must enter an email";
     } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
         .hasMatch(email.value)) {
-      emailError.value = "صيغة البريد الإلكتروني غير صحيحة";
+      emailError.value = "Invalid email format";
     } else {
       emailError.value = null;
     }
 
     if (password.value.isEmpty) {
-      passwordError.value = "يجب إدخال كلمة المرور";
+      passwordError.value = "You must enter the password";
     } else if (password.value.length < 8) {
-      passwordError.value = "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+      passwordError.value = "Password must be at least 8 characters long.";
     } else {
       passwordError.value = null;
     }
 
     if (confirmPassword.value.isEmpty) {
-      confirmPasswordError.value = "يجب إدخال تأكيد كلمة المرور";
+      confirmPasswordError.value = "You must enter a password confirmation.";
     } else if (password.value != confirmPassword.value) {
-      confirmPasswordError.value = "كلمات المرور غير متطابقة";
+      confirmPasswordError.value = "Passwords do not match";
     } else {
       confirmPasswordError.value = null;
     }
@@ -68,34 +68,29 @@ class RegisterController extends GetxController {
           },
         );
 
-        // طباعة الرد الكامل للتشخيص
         print('✅ Full Response: ${response.data}');
 
         if ([200, 201].contains(response.statusCode)) {
-          // 1. التحقق من وجود البيانات الأساسية
           if (response.data == null ||
               response.data['user'] == null ||
               response.data['authorisation'] == null) {
-            throw FormatException('بيانات الاستجابة غير صالحة');
+            throw FormatException('The response data is invalid');
           }
 
           final userData = response.data['user'] as Map<String, dynamic>;
           final authData =
               response.data['authorisation'] as Map<String, dynamic>;
 
-          // 2. التحقق من الحقول المطلوبة
           if (!userData.containsKey('name') || !userData.containsKey('email')) {
-            throw FormatException('بيانات المستخدم ناقصة');
+            throw FormatException('User data is incomplete');
           }
 
-          // 3. معالجة التوكن بشكل آمن
           final token = authData['token']?.toString() ?? '';
 
-          // 4. إنشاء النموذج مع القيم الافتراضية
           final user = UserModel(
             id: userData['id'] as int? ?? 0,
-            name: userData['name']?.toString() ?? 'غير معروف',
-            email: userData['email']?.toString() ?? 'بريد إلكتروني غير معروف',
+            name: userData['name']?.toString() ?? 'unknown',
+            email: userData['email']?.toString() ?? 'Unknown email',
             createdAt: userData['created_at']?.toString() ?? '',
             updatedAt: userData['updated_at']?.toString() ?? '',
             token: token,
@@ -107,13 +102,14 @@ class RegisterController extends GetxController {
         }
       } on Dio.DioException catch (e) {
         print('🚨 Dio Error: ${e.message}');
-        showErrorDialog("خطأ في الاتصال: ${e.message ?? 'حدث خطأ غير معروف'}");
+        showErrorDialog(
+            "Connection error: ${e.message ?? 'An unknown error has occurred'}");
       } on FormatException catch (e) {
         print('❌ Format Error: $e');
-        showErrorDialog("خطأ في تنسيق البيانات: ${e.message}");
+        showErrorDialog("Data format error: ${e.message}");
       } catch (e) {
         print('‼️ Critical Error: $e');
-        showErrorDialog("حدث خطأ غير متوقع: ${e.toString()}");
+        showErrorDialog("An unexpected error occurred: ${e.toString()}");
       } finally {
         isLoading.value = false;
       }
@@ -134,22 +130,22 @@ class RegisterController extends GetxController {
         nameError.value = errors['name'][0];
       }
     } else {
-      showErrorDialog(data?['message'] ?? "حدث خطأ غير متوقع");
+      showErrorDialog(data?['message'] ?? "An unexpected error occurred");
     }
   }
 
   void showSuccessDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text("نجاح"),
-        content: const Text("تم إنشاء الحساب بنجاح"),
+        title: const Text("success"),
+        content: const Text("The account has been created successfully"),
         actions: [
           TextButton(
             onPressed: () {
               Get.back();
-              Get.offAllNamed('/Login'); // التوجيه بعد الإغلاق
+              Get.offAllNamed('/Login');
             },
-            child: const Text("موافق"),
+            child: const Text("OK"),
           ),
         ],
       ),
@@ -160,12 +156,12 @@ class RegisterController extends GetxController {
   void showErrorDialog(String message) {
     Get.dialog(
       AlertDialog(
-        title: const Text("خطأ"),
+        title: const Text("Erorr"),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text("حاول مجدداً"),
+            child: const Text("Try again"),
           ),
         ],
       ),
