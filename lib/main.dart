@@ -14,6 +14,7 @@ import 'package:abo_najib_2/view/RegisterPage.dart';
 import 'package:abo_najib_2/view/ReminderPage.dart';
 import 'package:abo_najib_2/view/Setting.dart';
 import 'package:abo_najib_2/view/SplashScreen.dart';
+import 'package:abo_najib_2/view/WelcomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -105,8 +106,12 @@ class MyApp extends StatelessWidget {
           name: ("/Reminder"),
           page: () => RegisterPage(),
         ),
+        GetPage(
+          name: ("/WelcomeScreen"),
+          page: () => WelcomeScreen(),
+        ),
       ],
-      initialRoute: '/MyCustomSplashScreen',
+      initialRoute: '/WelcomeScreen',
     );
   }
 }
