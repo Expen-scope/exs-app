@@ -65,8 +65,8 @@ class LoginPage extends GetView<LoginController> {
       ),
       child: Column(
         children: [
-          _buildTextField(
-              "Gmail", controller.emailController, "أدخل بريدًا صحيحًا"),
+          _buildTextField("Gmail", controller.emailController,
+              "Enter a valid email address"),
           SizedBox(height: 10),
           _buildPasswordField(),
           SizedBox(height: 20),
@@ -91,6 +91,10 @@ class LoginPage extends GetView<LoginController> {
             hintText: label,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Color(0xFF264653), width: 2),
             ),
             filled: true,
             fillColor: Colors.white.withOpacity(0.8),
@@ -118,6 +122,10 @@ class LoginPage extends GetView<LoginController> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                ),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.8),
                 suffixIcon: IconButton(
@@ -128,7 +136,7 @@ class LoginPage extends GetView<LoginController> {
                 ),
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) return "أدخل كلمة المرور";
+                if (value == null || value.isEmpty) return "Enter the password";
                 return null;
               },
             )),

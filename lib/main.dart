@@ -26,6 +26,7 @@ import 'controller/user_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Get.putAsync(() => SharedPreferences.getInstance());
 
   final userController = Get.put(UserController());

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controller/user_controller.dart';
@@ -192,7 +191,6 @@ class CustomDrawer extends StatelessWidget {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await _performLogout();
             },
             child: const Text(
               'Log Out',
@@ -202,21 +200,5 @@ class CustomDrawer extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _performLogout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('isLoggedIn');
-      Get.find<UserController>().clearUserData();
-      Get.offAllNamed('/login');
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Logout failed: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
   }
 }

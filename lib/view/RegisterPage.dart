@@ -5,7 +5,6 @@ import '../controller/RegisterController.dart';
 class RegisterPage extends StatelessWidget {
   final RegisterController controller = Get.put(RegisterController());
 
-  // Define a unique GlobalKey for the Form
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -105,15 +104,41 @@ class RegisterPage extends StatelessWidget {
         Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
         Obx(() => TextFormField(
-              obscureText: obscureText,
-              keyboardType: keyboardType, // ✅ Support for number input
+              obscureText: obscureText
+                  ? (label == "Enter Password"
+                      ? !controller.isPasswordVisible.value
+                      : !controller.isConfirmPasswordVisible.value)
+                  : false, // تحديد حالة إظهار كلمة السر بناءً على الحقل
+              keyboardType: keyboardType,
               decoration: InputDecoration(
                 hintText: label,
                 errorText: errorText.value,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFF264653), width: 2),
+                ),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.8),
+                suffixIcon: label.contains(
+                        "Password") // إضافة الأيقونة فقط في الحقول المرتبطة بكلمة السر
+                    ? IconButton(
+                        icon: Icon(
+                          (label == "Enter Password"
+                                  ? controller.isPasswordVisible.value
+                                  : controller.isConfirmPasswordVisible.value)
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: label == "Enter Password"
+                            ? controller.togglePasswordVisibility
+                            : controller
+                                .toggleConfirmPasswordVisibility, // تغيير الخاصية حسب الحقل
+                      )
+                    : null,
               ),
               onChanged: onChanged,
             )),
@@ -129,9 +154,8 @@ class RegisterPage extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          onPressed: controller.isLoading.value
-              ? null
-              : controller.registerUser, // ✅ Disable button during loading
+          onPressed:
+              controller.isLoading.value ? null : controller.registerUser,
           child: controller.isLoading.value
               ? SizedBox(
                   width: 20,

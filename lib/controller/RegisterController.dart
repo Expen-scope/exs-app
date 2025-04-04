@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as Dio;
-import '../model/User.dart';
+import '../view/VerificationScreen.dart';
 
 class RegisterController extends GetxController {
   var name = ''.obs;
@@ -13,6 +13,11 @@ class RegisterController extends GetxController {
   var passwordError = RxnString();
   var confirmPasswordError = RxnString();
   var isLoading = false.obs;
+  var isPasswordVisible = false.obs;
+  var isConfirmPasswordVisible = false.obs;
+
+  void togglePasswordVisibility() => isPasswordVisible.toggle();
+  void toggleConfirmPasswordVisibility() => isConfirmPasswordVisible.toggle();
 
   final Dio.Dio dio = Dio.Dio(Dio.BaseOptions(
     baseUrl: 'http://10.0.2.2:8000/api/auth',
@@ -65,38 +70,14 @@ class RegisterController extends GetxController {
             'name': name.value,
             'email': email.value,
             'password': password.value,
+            'password_confirmation': confirmPassword.value,
           },
         );
 
         print('✅ Full Response: ${response.data}');
 
         if ([200, 201].contains(response.statusCode)) {
-          if (response.data == null ||
-              response.data['user'] == null ||
-              response.data['authorisation'] == null) {
-            throw FormatException('The response data is invalid');
-          }
-
-          final userData = response.data['user'] as Map<String, dynamic>;
-          final authData =
-              response.data['authorisation'] as Map<String, dynamic>;
-
-          if (!userData.containsKey('name') || !userData.containsKey('email')) {
-            throw FormatException('User data is incomplete');
-          }
-
-          final token = authData['token']?.toString() ?? '';
-
-          final user = UserModel(
-            id: userData['id'] as int? ?? 0,
-            name: userData['name']?.toString() ?? 'unknown',
-            email: userData['email']?.toString() ?? 'Unknown email',
-            createdAt: userData['created_at']?.toString() ?? '',
-            updatedAt: userData['updated_at']?.toString() ?? '',
-            token: token,
-          );
-
-          showSuccessDialog();
+          Get.to(() => VerificationScreen(email: email.value));
         } else {
           handleServerErrors(response.data);
         }
