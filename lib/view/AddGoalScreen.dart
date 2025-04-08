@@ -81,6 +81,23 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFF507da0),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Color(0xFF507da0),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -103,6 +120,22 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Color(0xFF507da0),
+                onPrimary: Colors.white,
+                onSurface: Colors.black,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Color(0xFF507da0),
+                ),
+              )),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() => selectedTime = picked);
@@ -223,61 +256,51 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                 children: [
                   GestureDetector(
                     onTap: pickTime,
-                    child: Expanded(
-                      flex: 1,
-                      child: Card(
-                        elevation: 8,
-                        color: Colors.grey[100],
-                        margin: EdgeInsets.all(4.2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 4.0, vertical: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.calendar_today, color: Colors.blue),
-                            ],
-                          ),
+                    child: Card(
+                      elevation: 8,
+                      color: Colors.grey[100],
+                      margin: EdgeInsets.all(4.2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.calendar_today, color: Colors.blue),
+                          ],
                         ),
                       ),
                     ),
                   ),
                   GestureDetector(
                     onTap: pickDate,
-                    child: Expanded(
-                      flex: 1,
-                      child: Card(
-                        elevation: 8,
-                        color: Colors.grey[100],
-                        margin: EdgeInsets.all(10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 4.0, vertical: 8),
-                          child: Row(
-                            children: [
-                              Text(
-                                selectedDate == null
-                                    ? "Select Deadline"
-                                    : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.access_time, color: Colors.green),
-                            ],
-                          ),
+                    child: Card(
+                      elevation: 8,
+                      color: Colors.grey[100],
+                      margin: EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 8),
+                        child: Row(
+                          children: [
+                            Text(
+                              selectedDate == null
+                                  ? "Select Deadline"
+                                  : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.access_time, color: Colors.green),
+                          ],
                         ),
                       ),
                     ),

@@ -96,6 +96,7 @@ class Reminders extends StatelessWidget {
                           }
                         },
                       ),
+
                     ],
                   ),
                 ),

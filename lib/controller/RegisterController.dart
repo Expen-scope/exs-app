@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as Dio;
-import '../view/VerificationScreen.dart';
+// import '../view/VerificationScreen.dart';
 
 class RegisterController extends GetxController {
   var name = ''.obs;
@@ -77,7 +77,7 @@ class RegisterController extends GetxController {
         print('✅ Full Response: ${response.data}');
 
         if ([200, 201].contains(response.statusCode)) {
-          Get.to(() => VerificationScreen(email: email.value));
+          // Get.to(() => VerificationScreen(email: email.value));
         } else {
           handleServerErrors(response.data);
         }

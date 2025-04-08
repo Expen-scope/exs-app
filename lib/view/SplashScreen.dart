@@ -51,10 +51,10 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
         if (userController.isLoggedIn.value) {
           Get.offAllNamed('/HomePage');
         } else {
-          Get.offAllNamed('/Login');
+          Get.offAllNamed('/WelcomeScreen');
         }
       } catch (e) {
-        Get.offAllNamed('/Login');
+        Get.offAllNamed('/WelcomeScreen');
       }
     });
   }

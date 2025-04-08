@@ -135,8 +135,7 @@ class RegisterPage extends StatelessWidget {
                         ),
                         onPressed: label == "Enter Password"
                             ? controller.togglePasswordVisibility
-                            : controller
-                                .toggleConfirmPasswordVisibility, // تغيير الخاصية حسب الحقل
+                            : controller.toggleConfirmPasswordVisibility,
                       )
                     : null,
               ),
