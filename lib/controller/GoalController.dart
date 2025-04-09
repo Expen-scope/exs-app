@@ -48,6 +48,7 @@ class GoalController extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body)['data'] as List;
         goals.assignAll(data.map((e) => GoalModel.fromJson(e)));
+        goals.refresh();
       }
     } catch (e) {
       print('Fetch Error: $e');

@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
 
 import '../view/ReminderPage.dart';
 
@@ -25,6 +27,7 @@ class ReminderController extends GetxController {
     tz.initializeTimeZones();
     _loadToken();
     fetchReminders();
+    _requestPermissions();
     _initNotifications();
     super.onInit();
   }
@@ -56,6 +59,7 @@ class ReminderController extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body)['data'] as List;
         reminders.assignAll(data.map((e) => ReminderModel.fromJson(e)));
+        reminders.refresh();
       }
     } catch (e) {
       print('Fetch Error: $e');
@@ -141,6 +145,37 @@ class ReminderController extends GetxController {
     }
   }
 
+  Future<void> _requestPermissions() async {
+    // طلب إذن الإشعارات
+    final notificationStatus = await Permission.notification.request();
+    if (notificationStatus.isDenied) {
+      Get.snackbar(
+        'Permission Required',
+        'Please enable notifications to receive reminders',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 5),
+        mainButton: TextButton(
+          onPressed: () => openAppSettings(),
+          child: Text('Open Settings'),
+        ),
+      );
+    }
+
+    final alarmStatus = await Permission.scheduleExactAlarm.request();
+    if (alarmStatus.isDenied) {
+      Get.snackbar(
+        'Permission Required',
+        'Please enable exact alarm permission for accurate reminders',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 5),
+        mainButton: TextButton(
+          onPressed: () => openAppSettings(),
+          child: Text('Open Settings'),
+        ),
+      );
+    }
+  }
+
   Future<void> _initNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -163,58 +198,104 @@ class ReminderController extends GetxController {
       onDidReceiveNotificationResponse: (details) {
         Get.to(() => Reminders());
       },
-
     );
+
+    // Create notification channel for Android
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'reminder_channel',
+      'Reminder Notifications',
+      description: 'Channel for reminder notifications',
+      importance: Importance.max,
+      enableVibration: true,
+      enableLights: true,
+      playSound: true,
+    );
+
     await _notificationsPlugin
         .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    // Request permissions for iOS
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   Future<void> _scheduleNotification(ReminderModel reminder) async {
-    print('Scheduling notification at: ${reminder.time}');
+    print(
+        'Scheduling notification for reminder: ${reminder.name} at ${reminder.time}');
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-
         AndroidNotificationDetails(
       'reminder_channel',
       'Reminder Notifications',
+      channelDescription: 'Channel for reminder notifications',
       importance: Importance.max,
       priority: Priority.high,
-          channelShowBadge: true,
-          playSound: true,
-          enableVibration: true,
+      channelShowBadge: true,
+      playSound: true,
+      enableVibration: true,
+      enableLights: true,
     );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails();
+        DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.zonedSchedule(
-      reminder.id!,
-      'Payment Reminder: ${reminder.name}',
-      'Amount: \$${reminder.price.toStringAsFixed(2)}',
-      tz.TZDateTime.from(reminder.time, tz.local),
-      platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
+    try {
+      final scheduledDate = tz.TZDateTime.from(reminder.time, tz.local);
+      print('Converted scheduled date: $scheduledDate');
+
+      final now = tz.TZDateTime.now(tz.local);
+      if (scheduledDate.isBefore(now)) {
+        print('Warning: Scheduled time is in the past');
+        Get.snackbar('Warning', 'Cannot schedule notification for past time');
+        return;
+      }
+
+      await _notificationsPlugin.zonedSchedule(
+        reminder.id!,
+        'Payment Reminder: ${reminder.name}',
+        'Amount: \$${reminder.price.toStringAsFixed(2)}',
+        scheduledDate,
+        platformChannelSpecifics,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        payload: 'reminder_${reminder.id}',
+      );
+      print('Notification scheduled successfully for ID: ${reminder.id}');
+    } catch (e) {
+      print('Error scheduling notification: $e');
+      Get.snackbar('Error', 'Failed to schedule notification: $e');
+    }
   }
 
   Future<void> _cancelNotification(int id) async {
     try {
       await _notificationsPlugin.cancel(id);
-      print('Notification $id cancelled');
+      print('Notification $id cancelled successfully');
     } catch (e) {
       print('Error cancelling notification: $e');
     }
+  }
+
+  @override
+  void onClose() {
+    // Cancel all notifications when controller is closed
+    _notificationsPlugin.cancelAll();
+    super.onClose();
   }
 }
