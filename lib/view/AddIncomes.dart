@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../const/AppBarC.dart';
 import '../const/Constants.dart';
-import '../controller/IcomesContorller.dart';
+import '../controller/IncomesController.dart';
 import '../model/Incomes.dart';
 
 class AddIncomes extends StatelessWidget {
@@ -43,6 +43,7 @@ class AddIncomes extends StatelessWidget {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
         child: TextField(
+          cursorColor: Color(0xFF264653),
           controller: controller,
           keyboardType: type,
           decoration: InputDecoration(

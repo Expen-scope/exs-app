@@ -21,11 +21,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
-import 'controller/IcomesContorller.dart';
+import '../controller/IncomesController.dart';
 import 'controller/LoginController.dart';
 import 'controller/RegisterController.dart';
 import 'controller/login_binding.dart';
 import 'controller/user_controller.dart';
+import 'controller/FinancialController.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -52,17 +53,29 @@ void main() async {
     iOS: initializationSettingsDarwin,
   );
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      print('Notification clicked: ${response.payload}');
+    },
+  );
 
-  // Request permissions for iOS
+  // Create notification channel for Android
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'reminder_channel',
+    'Reminder Notifications',
+    description: 'Channel for reminder notifications',
+    importance: Importance.max,
+    enableVibration: true,
+    enableLights: true,
+    ledColor: Colors.blue,
+    playSound: true,
+  );
+
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
 
   await Get.putAsync(() => SharedPreferences.getInstance());
 
@@ -77,6 +90,8 @@ void main() async {
 
   Get.lazyPut(() => LoginController());
   Get.lazyPut(() => RegisterController());
+
+  Get.put(FinancialController());
 
   runApp(MyApp());
 }

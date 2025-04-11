@@ -39,6 +39,7 @@ class _AddExpencesState extends State<AddExpences> {
               padding:
                   EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: TextField(
+                cursorColor: Color(0xFF264653),
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Name",
@@ -58,6 +59,7 @@ class _AddExpencesState extends State<AddExpences> {
               padding:
                   EdgeInsets.symmetric(horizontal: hight(Get.context!) * .007),
               child: TextField(
+                cursorColor: Color(0xFF264653),
                 controller: valueController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(

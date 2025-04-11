@@ -85,6 +85,7 @@ class LoginPage extends GetView<LoginController> {
         Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
         TextFormField(
+          cursorColor: Color(0xFF264653),
           controller: textController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
@@ -115,6 +116,7 @@ class LoginPage extends GetView<LoginController> {
         Text("Password", style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
         Obx(() => TextFormField(
+              cursorColor: Color(0xFF264653),
               controller: controller.passwordController,
               obscureText: !controller.isPasswordVisible.value,
               decoration: InputDecoration(

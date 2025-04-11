@@ -18,6 +18,7 @@ class EditReminderScreen extends StatefulWidget {
 class _EditReminderScreenState extends State<EditReminderScreen> {
   final ReminderController reminderController = Get.find();
   final TextEditingController _amountController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
   }
 
   void _handleReminderUpdate() async {
+    setState(() => isLoading = true);
     try {
       final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
 
@@ -56,19 +58,26 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
       final success = await reminderController.updateReminder(updatedReminder);
 
       if (success) {
-        _amountController.clear();
         DialogHelper.showSuccessDialog(
           title: 'Success',
           message: 'Reminder updated successfully',
+          onOkPressed: () {
+            Get.back();
+          },
         );
-        Get.back();
-        Get.until((route) => Get.currentRoute == '/Reminders');
+      } else {
+        DialogHelper.showErrorDialog(
+          title: 'Update Error',
+          message: 'Failed to update reminder',
+        );
       }
     } catch (e) {
       DialogHelper.showErrorDialog(
         title: 'Update Error',
         message: 'Failed to update reminder: ${e.toString()}',
       );
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
@@ -169,10 +178,10 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
       padding: const EdgeInsets.only(top: 30.0),
       child: Center(
         child: ElevatedButton.icon(
-          onPressed: _handleReminderUpdate,
+          onPressed: isLoading ? null : _handleReminderUpdate,
           icon: const Icon(Icons.update, color: Colors.white),
-          label: const Text(
-            "Update",
+          label: Text(
+            isLoading ? "Updating..." : "Update",
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
           ),

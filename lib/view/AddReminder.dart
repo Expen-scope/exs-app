@@ -5,6 +5,7 @@ import '../const/AppBarC.dart';
 import '../const/Constants.dart';
 import '../controller/ReminderController.dart';
 import '../model/Reminder.dart';
+import '../utils/dialog_helper.dart';
 import 'ReminderPage.dart';
 
 class AddReminderScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      setState(() => isLoading = false);
       return;
     }
 
@@ -50,6 +52,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      setState(() => isLoading = false);
       return;
     }
 
@@ -70,12 +73,13 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     );
 
     bool success = await reminderController.addReminder(newReminder);
+    setState(() => isLoading = false);
+
     if (success) {
-      await Future.delayed(Duration(milliseconds: 300));
-      if (mounted) {
-        Navigator.pop(context);
-        reminderController.fetchReminders();
-      }
+      DialogHelper.showSuccessDialog(
+        title: 'Success',
+        message: 'Reminder added successfully',
+      );
     }
   }
 

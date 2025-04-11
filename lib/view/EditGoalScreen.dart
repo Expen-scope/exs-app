@@ -151,6 +151,7 @@ class _EditGoalScreenState extends State<EditGoalScreen> {
 
   Widget _buildAmountInput(double remaining) {
     return TextFormField(
+      cursorColor: Color(0xFF264653),
       controller: _amountController,
       decoration: InputDecoration(
         labelText: "Added amount (remaining:${remaining.toStringAsFixed(2)})",

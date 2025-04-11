@@ -214,6 +214,7 @@ class _SettingState extends State<Setting> {
     required TextEditingController controller,
   }) {
     return TextFormField(
+      cursorColor: Color(0xFF264653),
       controller: controller,
       obscureText: true,
       keyboardType: TextInputType.visiblePassword,

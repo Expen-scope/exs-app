@@ -104,6 +104,7 @@ class RegisterPage extends StatelessWidget {
         Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
         SizedBox(height: 5),
         Obx(() => TextFormField(
+              cursorColor: Color(0xFF264653),
               obscureText: obscureText
                   ? (label == "Enter Password"
                       ? !controller.isPasswordVisible.value

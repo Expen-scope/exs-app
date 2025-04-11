@@ -92,7 +92,6 @@ class ExpencesController extends GetxController {
         var data = json.decode(response.body)['data'] as List;
         listExpenses.value = data.map((e) => Expense.fromJson(e)).toList();
         listExpenses.refresh();
-
       } else {
         Get.snackbar('Error', 'Failed to load expenses');
       }

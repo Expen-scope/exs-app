@@ -264,13 +264,15 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               "Time: ${selectedTime != null ? selectedTime!.format(context) : ''}",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(width: 8),
                             Icon(Icons.calendar_today, color: Colors.blue),
@@ -289,14 +291,16 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3.0, vertical: 8),
                         child: Row(
                           children: [
                             Text(
                               selectedDate == null
                                   ? "Select Deadline"
                                   : "Deadline: ${selectedDate!.toLocal().toString().split(' ')[0]}",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(width: 8),
                             Icon(Icons.access_time, color: Colors.green),

@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../model/Expenses.dart';
 import '../model/Incomes.dart';
 import 'ExpensesController.dart';
-import 'IcomesContorller.dart';
+import 'IncomesController.dart';
 
 class FinancialController extends GetxController {
   final IncomesController incomesController = Get.find();
@@ -87,10 +87,10 @@ class FinancialController extends GetxController {
 
   void _processData() {
     try {
-    _calculateTotals();
-    _processCategoryAnalysis();
-    _processMonthlyTrends();
-    _processTransactions();
+      _calculateTotals();
+      _processCategoryAnalysis();
+      _processMonthlyTrends();
+      _processTransactions();
       _calculateBalance();
       update();
     } catch (e) {
@@ -294,7 +294,7 @@ class FinancialController extends GetxController {
   Map<String, dynamic> _incomeToTransaction(Income income) {
     final categoryInfo =
         incomesController.incomeCategoriesData[income.category] ??
-        IncomeInfo(color: Colors.grey, icon: Icon(Icons.money));
+            IncomeInfo(color: Colors.grey, icon: Icon(Icons.money));
 
     DateTime date;
     try {

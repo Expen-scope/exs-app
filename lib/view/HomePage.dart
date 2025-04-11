@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:abo_najib_2/const/Constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,47 @@ import '../controller/FinancialController.dart';
 class HomePage extends StatelessWidget {
   final FinancialController controller = Get.put(FinancialController());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final List<String> _sectionOrder = [
+    'header',
+    'summary',
+    'charts',
+    'transactions',
+  ];
+
+  void _onReorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final String item = _sectionOrder.removeAt(oldIndex);
+    _sectionOrder.insert(newIndex, item);
+  }
+
+  Widget _buildSection(String sectionId) {
+    switch (sectionId) {
+      case 'header':
+        return KeyedSubtree(
+          key: const ValueKey('header'),
+          child: _buildHeader(),
+        );
+      case 'summary':
+        return KeyedSubtree(
+          key: const ValueKey('summary'),
+          child: _buildFinancialSummary(),
+        );
+      case 'charts':
+        return KeyedSubtree(
+          key: const ValueKey('charts'),
+          child: _buildAdvancedChartsSection(),
+        );
+      case 'transactions':
+        return KeyedSubtree(
+          key: const ValueKey('transactions'),
+          child: _buildTransactionSection(),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +63,12 @@ class HomePage extends StatelessWidget {
             ? Center(child: CircularProgressIndicator())
             : RefreshIndicator(
                 onRefresh: controller.loadData,
-                child: ListView(
-                  children: [
-                    _buildHeader(),
-                    _buildFinancialSummary(),
-                    _buildAdvancedChartsSection(),
-                    _buildTransactionSection(),
-                  ],
+                child: ReorderableListView.builder(
+                  onReorder: _onReorder,
+                  itemCount: _sectionOrder.length,
+                  itemBuilder: (context, index) {
+                    return _buildSection(_sectionOrder[index]);
+                  },
                 ),
               );
       }),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import '../const/AppBarC.dart';
-import '../controller/IcomesContorller.dart';
+import '../controller/IncomesController.dart';
 import 'AddIncomes.dart';
 
 class IncomesScreens extends StatelessWidget {

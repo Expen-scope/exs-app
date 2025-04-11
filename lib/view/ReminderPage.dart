@@ -6,6 +6,7 @@ import '../const/AppBarC.dart';
 import '../controller/ReminderController.dart';
 import '../model/Reminder.dart';
 import 'AddReminder.dart';
+import 'EditReminderScreen.dart';
 
 class Reminders extends StatelessWidget {
   static String id = "Reminders";
@@ -18,7 +19,7 @@ class Reminders extends StatelessWidget {
     return Scaffold(
       appBar: Appbarofpage(TextPage: "Reminders"),
       body: RefreshIndicator(
-        onRefresh: () => reminderController.fetchReminders(),
+        onRefresh: () async {},
         child: Obx(() {
           if (reminderController.reminders.isEmpty) {
             return const Center(
@@ -51,53 +52,82 @@ class Reminders extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        reminder.name ?? 'No Title',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                child: InkWell(
+                  onTap: () async {
+                    await Get.to(
+                      () => EditReminderScreen(reminder: reminder),
+                      fullscreenDialog: true,
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          reminder.name ?? 'No Title',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2e495e),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Amount: ${currencyFormat.format(reminder.price)}',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                      Text(
-                        'Due in: ${remainingDuration.inDays} days, '
-                        '${remainingDuration.inHours.remainder(24)} hours',
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                      Text(
-                        'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.time)}',
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                      SizedBox(height: 10),
-                      IconButton(
-                        icon:
-                            const Icon(Icons.delete, color: Color(0xFF264653)),
-                        onPressed: () async {
-                          bool success = await reminderController
-                              .deleteReminder(reminder.id!);
-                          if (success) {
-                            Get.snackbar(
-                                "Success", "Reminder deleted successfully",
-                                snackPosition: SnackPosition.BOTTOM);
-                          } else {
-                            Get.snackbar("Error", "Failed to delete reminder",
-                                snackPosition: SnackPosition.BOTTOM);
-                          }
-                        },
-                      ),
-
-                    ],
+                        SizedBox(height: 10),
+                        Text(
+                          'Amount: ${currencyFormat.format(reminder.price)}',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                        Text(
+                          'Collected: ${currencyFormat.format(reminder.collectedoprice)}',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                        Text(
+                          'Due in: ${remainingDuration.inDays} days, '
+                          '${remainingDuration.inHours.remainder(24)} hours',
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        ),
+                        Text(
+                          'At: ${DateFormat('yyyy-MM-dd HH:mm').format(reminder.time)}',
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Color(0xFF2e495e),
+                              ),
+                              onPressed: () async {
+                                await Get.to(
+                                  () => EditReminderScreen(reminder: reminder),
+                                  fullscreenDialog: true,
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete,
+                                  color: Color(0xFF264653)),
+                              onPressed: () async {
+                                bool success = await reminderController
+                                    .deleteReminder(reminder.id!);
+                                if (success) {
+                                  Get.snackbar("Success",
+                                      "Reminder deleted successfully",
+                                      snackPosition: SnackPosition.BOTTOM);
+                                } else {
+                                  Get.snackbar(
+                                      "Error", "Failed to delete reminder",
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -108,7 +138,6 @@ class Reminders extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Get.to(() => AddReminderScreen());
-          reminderController.fetchReminders();
         },
         tooltip: 'Add Reminder',
         backgroundColor: const Color(0xFF507da0),
