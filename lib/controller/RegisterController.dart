@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as Dio;
+
+import '../utils/dialog_helper.dart';
 // import '../view/VerificationScreen.dart';
 
 class RegisterController extends GetxController {
@@ -77,7 +79,7 @@ class RegisterController extends GetxController {
         print('✅ Full Response: ${response.data}');
 
         if ([200, 201].contains(response.statusCode)) {
-          // Get.to(() => VerificationScreen(email: email.value));
+          showSuccessDialog();
         } else {
           handleServerErrors(response.data);
         }
@@ -116,37 +118,13 @@ class RegisterController extends GetxController {
   }
 
   void showSuccessDialog() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text("success"),
-        content: const Text("The account has been created successfully"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              Get.offAllNamed('/Login');
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
+    DialogHelper.showSuccessDialog(
+      title: "success",
+      message: "The account has been created successfully",
     );
   }
 
   void showErrorDialog(String message) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text("Erorr"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("Try again"),
-          ),
-        ],
-      ),
-      barrierDismissible: true,
-    );
+    DialogHelper.showSuccessDialog(title: "Erorr", message: message);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:async';
 import '../model/Reminder.dart';
@@ -28,7 +27,6 @@ class ReminderController extends GetxController {
   }
 
   void _startPeriodicChecking() {
-    // Check every minute
     _checkTimer = Timer.periodic(Duration(minutes: 1), (timer) {
       _checkRemindersCompletion();
     });

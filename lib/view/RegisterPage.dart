@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/RegisterController.dart';
+import '../utils/dialog_helper.dart';
 
 class RegisterPage extends StatelessWidget {
   final RegisterController controller = Get.put(RegisterController());
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    ever(controller.isLoading, (isLoading) {
+      if (!isLoading && _shouldShowSuccess()) {
+        _showSuccessDialog();
+      }
+    });
+    _listenForFieldErrors();
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -179,4 +186,40 @@ class RegisterPage extends StatelessWidget {
       ],
     );
   }
+
+  bool _shouldShowSuccess() {
+    return controller.nameError.value == null &&
+        controller.emailError.value == null &&
+        controller.passwordError.value == null &&
+        controller.confirmPasswordError.value == null;
+  }
+
+  void _showSuccessDialog() {
+    DialogHelper.showSuccessDialog(
+      title: "Success",
+      message: "The account has been created successfully",
+      onOkPressed: () => Get.offAllNamed('/Login'),
+    );
+  }
+
+  void _listenForFieldErrors() {
+    final errorListeners = [
+      controller.nameError,
+      controller.emailError,
+      controller.passwordError,
+      controller.confirmPasswordError,
+    ];
+
+    for (var error in errorListeners) {
+      ever(error, (value) {
+        if (value != null) {
+          DialogHelper.showErrorDialog(
+            title: "Error",
+            message: value,
+          );
+        }
+      });
+    }
+  }
+
 }

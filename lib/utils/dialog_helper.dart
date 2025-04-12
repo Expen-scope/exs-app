@@ -17,6 +17,8 @@ class DialogHelper {
       btnOkOnPress: onOkPressed ?? () {},
       btnOkText: 'OK',
       btnOkColor: Colors.green,
+      barrierColor: Colors.transparent,
+      dialogBackgroundColor: Colors.white,
       titleTextStyle: const TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
@@ -39,6 +41,8 @@ class DialogHelper {
       animType: AnimType.rightSlide,
       title: title,
       desc: message,
+      barrierColor: Colors.transparent,
+      dialogBackgroundColor: Colors.white,
       btnOkOnPress: onOkPressed ?? () {},
       btnOkText: 'OK',
       btnOkColor: Colors.red,

@@ -107,18 +107,10 @@ class LoginController extends GetxController {
   }
 
   void _showSuccessDialog() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text("success", style: TextStyle(color: Colors.green)),
-        content: const Text("You have been logged in successfully"),
-        actions: [
-          TextButton(
-            onPressed: () => Get.offAllNamed('/HomePage'),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
+    DialogHelper.showSuccessDialog(
+      title: "success",
+      message: "You have been logged in successfully",
+        onOkPressed: () =>Get.offAllNamed('/HomePage'),
     );
   }
 
