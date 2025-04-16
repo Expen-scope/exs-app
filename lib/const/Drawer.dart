@@ -190,7 +190,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Get.toNamed("/Login");
             },
             child: const Text(
               'Log Out',

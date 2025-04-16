@@ -157,7 +157,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: ("/Reminder"),
-          page: () => RegisterPage(),
+          page: () => Reminders(),
         ),
         GetPage(
           name: ("/WelcomeScreen"),

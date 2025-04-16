@@ -116,7 +116,7 @@ class RegisterPage extends StatelessWidget {
                   ? (label == "Enter Password"
                       ? !controller.isPasswordVisible.value
                       : !controller.isConfirmPasswordVisible.value)
-                  : false, // تحديد حالة إظهار كلمة السر بناءً على الحقل
+                  : false,
               keyboardType: keyboardType,
               decoration: InputDecoration(
                 hintText: label,
@@ -128,10 +128,11 @@ class RegisterPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Color(0xFF264653), width: 2),
                 ),
+
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.8),
                 suffixIcon: label.contains(
-                        "Password") // إضافة الأيقونة فقط في الحقول المرتبطة بكلمة السر
+                        "Password")
                     ? IconButton(
                         icon: Icon(
                           (label == "Enter Password"

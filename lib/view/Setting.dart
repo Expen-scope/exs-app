@@ -220,15 +220,16 @@ class _SettingState extends State<Setting> {
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color:  Color(0xFF264653)),
         prefixIcon: Icon(icon, color: const Color(0xFF507da0)),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF507da0), width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Color(0xFF264653), width: 2),
         ),
+
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),

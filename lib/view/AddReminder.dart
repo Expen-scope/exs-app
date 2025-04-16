@@ -79,6 +79,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       DialogHelper.showSuccessDialog(
         title: 'Success',
         message: 'Reminder added successfully',
+        onOkPressed: ()=>  Get.toNamed("/Reminder"),
+
       );
     }
   }
@@ -216,7 +218,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   child: Card(
                     elevation: 8,
                     color: Colors.grey[100],
-                    margin: EdgeInsets.all(4.2),
+                    margin: EdgeInsets.all(3.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
